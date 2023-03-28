@@ -48,3 +48,11 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+task copyPrivate(type: Copy) {
+    copy {
+        from './numble_instagram_submodule'
+        include "*.yml"
+        into 'src/main/resources'
+    }
+}

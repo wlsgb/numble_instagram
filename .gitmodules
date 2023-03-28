@@ -1,0 +1,3 @@
+[submodule "numble_instagram_submodule"]
+	path = numble_instagram_submodule
+	url = https://github.com/wlsgb/numble_instagram_submodule.git
