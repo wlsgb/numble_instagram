@@ -6,6 +6,10 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.ResultCheckStyle;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.instagram.numble_instagram.model.entity.image.ImageEntity;
@@ -32,6 +36,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Builder
+@DynamicInsert
+@DynamicUpdate
+@SQLDelete(sql="UPDATE USER SET DEL_YN = 'Y' WHERE USER_ID = ?", check= ResultCheckStyle.COUNT)
 @Entity
 @Table(name = "USER", indexes = {
 	@Index(name = "USER_INDEX1", columnList = "DEL_YN", unique = true),
