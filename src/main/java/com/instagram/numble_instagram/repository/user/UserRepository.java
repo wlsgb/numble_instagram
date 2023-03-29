@@ -7,4 +7,9 @@ import com.instagram.numble_instagram.model.entity.user.UserEntity;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
+
+	/**
+	 * 닉네임 조회
+	 */
+	UserEntity findByNickname(String nickname);
 }
