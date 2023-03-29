@@ -2,10 +2,13 @@ package com.instagram.numble_instagram.model.entity.post;
 
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.ResultCheckStyle;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import com.instagram.numble_instagram.model.entity.user.UserEntity;
 
@@ -18,10 +21,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,12 +31,23 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Builder
+@DynamicInsert
+@DynamicUpdate
+@SQLDelete(sql = "UPDATE REPLY SET DELETED = TRUE WHERE USER_ID = ?", check = ResultCheckStyle.COUNT)
+@Where(clause = "DELETED = FALSE")
 @Entity
 @Table(name = "REPLY", indexes = {
-	@Index(name = "REPLY_INDEX1", columnList = "DEL_YN", unique = true),
+	@Index(name = "REPLY_INDEX1", columnList = "DELETED"),
 })
 public class ReplyEntity {
+
+	@Builder
+	public ReplyEntity(String content, CommentEntity comment, UserEntity user) {
+		this.content = content;
+		this.comment = comment;
+		this.user = user;
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "REPLY_ID")
@@ -61,18 +72,8 @@ public class ReplyEntity {
 	@Comment("등록 날짜")
 	private LocalDateTime regDate;
 
-	@UpdateTimestamp
-	@Column(name = "UPD_DATE", nullable = false)
-	@Comment("수정 날짜")
-	private LocalDateTime UpdDate;
-
-	@Column(name = "DEL_YN", length = 1, nullable = false)
-	@ColumnDefault("'N'")
+	@Column(name = "DELETED", nullable = false)
 	@Comment("삭제 여부")
-	private Character delYn;
+	private boolean deleted = Boolean.FALSE;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "DEL_DATE")
-	@Comment("삭제 날짜")
-	private LocalDateTime delDate;
 }

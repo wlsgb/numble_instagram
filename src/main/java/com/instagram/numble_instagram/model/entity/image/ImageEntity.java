@@ -3,9 +3,13 @@ package com.instagram.numble_instagram.model.entity.image;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.ResultCheckStyle;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,24 +18,28 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Builder
+@DynamicInsert
+@DynamicUpdate
+@SQLDelete(sql = "UPDATE IMAGE SET DELETED = TRUE WHERE IMAGE_ID = ?", check = ResultCheckStyle.COUNT)
+@Where(clause = "DELETED = FALSE")
 @Entity
 @Table(name = "IMAGE", indexes = {
-	@Index(name = "IMAGE_INDEX_01", columnList = "DEL_YN", unique = true)
+	@Index(name = "IMAGE_INDEX_01", columnList = "DELETED")
 })
 @Comment("이미지 테이블")
 public class ImageEntity implements Serializable {
+
+	@Builder
+	public ImageEntity(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,13 +54,7 @@ public class ImageEntity implements Serializable {
 	@Comment("등록 날짜")
 	private LocalDateTime regDate;
 
-	@Column(name = "DEL_YN", length = 1, nullable = false)
-	@ColumnDefault("'N'")
+	@Column(name = "DELETED", nullable = false)
 	@Comment("삭제 여부")
-	private Character delYn;
-
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "DEL_DATE")
-	@Comment("삭제 날짜")
-	private LocalDateTime delDate;
+	private boolean deleted = Boolean.FALSE;
 }

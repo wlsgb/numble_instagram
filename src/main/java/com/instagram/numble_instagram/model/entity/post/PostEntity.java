@@ -4,10 +4,14 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.ResultCheckStyle;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
 
 import com.instagram.numble_instagram.model.entity.image.ImageEntity;
 import com.instagram.numble_instagram.model.entity.user.UserEntity;
@@ -25,24 +29,31 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Builder
+@DynamicInsert
+@DynamicUpdate
+@SQLDelete(sql = "UPDATE POST SET DELETED = TRUE WHERE USER_ID = ?", check = ResultCheckStyle.COUNT)
+@Where(clause = "DELETED = FALSE")
 @Entity
 @Table(name = "POST", indexes = {
-	@Index(name = "POST_INDEX1", columnList = "DEL_YN", unique = true),
+	@Index(name = "POST_INDEX1", columnList = "DELETED"),
 })
 @Comment("글 테이블")
 public class PostEntity implements Serializable {
+
+	@Builder
+	public PostEntity(String content, ImageEntity image, UserEntity user) {
+		this.content = content;
+		this.image = image;
+		this.user = user;
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "POST_ID")
@@ -73,15 +84,9 @@ public class PostEntity implements Serializable {
 	@Comment("수정 날짜")
 	private LocalDateTime UpdDate;
 
-	@Column(name = "DEL_YN", length = 1, nullable = false)
-	@ColumnDefault("'N'")
+	@Column(name = "DELETED", nullable = false)
 	@Comment("삭제 여부")
-	private Character delYn;
-
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "DEL_DATE")
-	@Comment("삭제 날짜")
-	private LocalDateTime delDate;
+	private boolean deleted = Boolean.FALSE;
 
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CommentEntity> commentList;
