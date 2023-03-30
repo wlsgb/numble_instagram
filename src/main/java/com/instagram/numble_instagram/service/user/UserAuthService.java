@@ -32,7 +32,7 @@ public class UserAuthService {
 		// 닉네임 검증
 		Optional<UserEntity> validateUser = userRepository.findByNickname(dto.getNickname());
 		// 동일한 닉네임이 존재하는 경우
-		if (validateUser.isEmpty())
+		if (validateUser.isPresent())
 			throw new RuntimeException("동일한 닉네임을 가진 유저가 존재합니다.");
 
 		// 프로필 사진 업로드
