@@ -1,5 +1,6 @@
 package com.instagram.numble_instagram.controller.user;
 
+import com.instagram.numble_instagram.model.dto.jwt.Token;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,8 +41,8 @@ public class AuthController {
 	 * 로그인
 	 */
 	@PostMapping("/sign-in")
-	public String getSignInToken(@RequestBody SignInRequest signInRequest) {
+	public ResponseEntity<Token> getSignInToken(@RequestBody SignInRequest signInRequest) {
 		UserEntity user = userAuthService.signIn(signInRequest);
-		return jwtTokenProvider.createToken(user);
+		return ResponseEntity.ok(jwtTokenProvider.createAccessToken(user));
 	}
 }
