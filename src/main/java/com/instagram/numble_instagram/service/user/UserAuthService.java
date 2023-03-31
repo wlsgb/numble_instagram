@@ -51,11 +51,7 @@ public class UserAuthService {
 	 * 로그인
 	 */
 	public UserEntity signIn(SignInRequest dto) {
-		Optional<UserEntity> optiUser = userRepository.findByNickname(dto.getNickname());
-		// 유저 정보가 없는 경우
-		if (optiUser.isEmpty())
-			throw new RuntimeException("해당 닉네임이 존재하지 않아 로그인에 실패하였습니다.");
-		// 로그인 정보 리턴
-		return optiUser.get();
+		return userRepository.findByNickname(dto.getNickname())
+				.orElseThrow(() -> new IllegalArgumentException("가입되지 않은 닉네임입니다."));
 	}
 }
