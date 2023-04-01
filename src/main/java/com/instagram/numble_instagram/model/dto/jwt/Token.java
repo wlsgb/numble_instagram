@@ -12,7 +12,6 @@ import lombok.Setter;
 @Setter
 @Builder
 public class Token {
-  private String grantType;
   private String accessToken;
   private String refreshToken;
   private String key;

@@ -19,7 +19,7 @@ public class SecurityConfig {
 		// csrf 보안 토큰 비활성화, JWT 토큰을 사용할경우 필수적으로 사용
 		http.csrf().disable();
 		http.httpBasic().disable();
-		http.authorizeHttpRequests().requestMatchers("/*").permitAll();
+		http.authorizeHttpRequests().requestMatchers("/**").permitAll();
 		return http.build();
 	}
 }

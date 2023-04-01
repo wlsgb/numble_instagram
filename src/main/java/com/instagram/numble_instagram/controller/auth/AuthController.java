@@ -1,6 +1,5 @@
-package com.instagram.numble_instagram.controller.user;
+package com.instagram.numble_instagram.controller.auth;
 
-import com.instagram.numble_instagram.model.dto.jwt.Token;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,9 +7,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.instagram.numble_instagram.config.jwt.JwtTokenProvider;
+import com.instagram.numble_instagram.model.dto.jwt.Token;
 import com.instagram.numble_instagram.model.dto.user.SignInRequest;
 import com.instagram.numble_instagram.model.dto.user.SignUpRequest;
 import com.instagram.numble_instagram.model.entity.user.UserEntity;
+import com.instagram.numble_instagram.service.jwt.JwtService;
 import com.instagram.numble_instagram.service.user.UserAuthService;
 
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 public class AuthController {
 	private final JwtTokenProvider jwtTokenProvider;
+	private final JwtService jwtService;
 	private final UserAuthService userAuthService;
 
 	/**
@@ -42,7 +44,12 @@ public class AuthController {
 	 */
 	@PostMapping("/sign-in")
 	public ResponseEntity<Token> getSignInToken(@RequestBody SignInRequest signInRequest) {
+		log.info("로그인 요청 - [닉네임: {}]", signInRequest.getNickname());
 		UserEntity user = userAuthService.signIn(signInRequest);
-		return ResponseEntity.ok(jwtTokenProvider.createAccessToken(user));
+
+		Token token = jwtTokenProvider.createAccessToken(user);
+		log.debug("로그인 완료 - [닉네임: {}]", signInRequest.getNickname());
+		jwtService.signIn(token);
+		return ResponseEntity.ok(token);
 	}
 }
