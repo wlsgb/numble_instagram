@@ -1,5 +1,7 @@
 package com.instagram.numble_instagram.model.entity.jwt;
 
+import org.hibernate.annotations.Comment;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,7 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Comment;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,10 +31,10 @@ public class RefreshTokenEntity {
   @Column(name = "REFRESH_TOKEN_ID", nullable = false)
   private Long refreshTokenId;
 
-  @Column(name = "REFRESH_TOKEN", nullable = false)
+  @Column(name = "REFRESH_TOKEN", nullable = false, unique = true)
   private String refreshToken;
 
-  @Column(name = "KEY_USER_ID", nullable = false)
+  @Column(name = "KEY_USER_ID", nullable = false, unique = true)
   private String keyUserId;
 
 }
