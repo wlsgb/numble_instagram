@@ -14,6 +14,8 @@ import com.instagram.numble_instagram.model.entity.user.UserEntity;
 import com.instagram.numble_instagram.service.jwt.JwtService;
 import com.instagram.numble_instagram.service.user.UserAuthService;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,13 +45,28 @@ public class AuthController {
 	 * 로그인
 	 */
 	@PostMapping("/sign-in")
-	public ResponseEntity<Token> getSignInToken(@RequestBody SignInRequest signInRequest) {
+	public ResponseEntity<Token> getSignInToken(
+		HttpServletResponse response,
+		@RequestBody SignInRequest signInRequest
+	) {
 		log.info("로그인 요청 - [닉네임: {}]", signInRequest.getNickname());
 		UserEntity user = userAuthService.signIn(signInRequest);
 
-		Token token = jwtTokenProvider.createAccessToken(user);
+		Token token = jwtTokenProvider.createToken(
+			String.valueOf(user.getUserId()),
+			user.getNickname()
+		);
 		log.debug("로그인 완료 - [닉네임: {}]", signInRequest.getNickname());
 		jwtService.signIn(token);
+		response.addHeader("Authorization", "Bearer " + token.getAccessToken());
+		response.addHeader("Authorization_refresh", "Bearer " + token.getRefreshToken());
 		return ResponseEntity.ok(token);
+	}
+
+	@PostMapping(value = "/delete-account")
+	public ResponseEntity<?> deleteAccount(
+		HttpServletRequest request
+	) {
+		return ResponseEntity.ok().build();
 	}
 }

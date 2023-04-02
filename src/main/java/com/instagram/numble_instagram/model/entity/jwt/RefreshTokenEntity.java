@@ -31,10 +31,10 @@ public class RefreshTokenEntity {
   @Column(name = "REFRESH_TOKEN_ID", nullable = false)
   private Long refreshTokenId;
 
-  @Column(name = "REFRESH_TOKEN", nullable = false, unique = true)
+  @Column(name = "REFRESH_TOKEN", nullable = false)
   private String refreshToken;
 
-  @Column(name = "KEY_USER_ID", nullable = false, unique = true)
+  @Column(name = "KEY_USER_ID", nullable = false)
   private String keyUserId;
 
 }

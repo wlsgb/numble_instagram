@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.instagram.numble_instagram.config.jwt.JwtTokenProvider;
 import com.instagram.numble_instagram.model.dto.jwt.RefreshApiResponseMessage;
 import com.instagram.numble_instagram.model.dto.jwt.Token;
 import com.instagram.numble_instagram.service.jwt.JwtService;
@@ -22,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/jwt")
 public class JwtController {
-	private final JwtTokenProvider jwtTokenProvider;
 	private final JwtService jwtService;
 
 	@PostMapping(value = "/refresh")
@@ -34,7 +32,7 @@ public class JwtController {
 
 		RefreshApiResponseMessage refreshApiResponseMessage = new RefreshApiResponseMessage(map);
 
-		if(map.get("status").equals("402")){
+		if (map.get("status").equals("402")) {
 			log.info("RefreshController - Refresh Token이 만료.");
 			return new ResponseEntity<>(refreshApiResponseMessage, HttpStatus.UNAUTHORIZED);
 		}

@@ -54,4 +54,12 @@ public class UserAuthService {
 		return userRepository.findByNickname(dto.getNickname())
 				.orElseThrow(() -> new IllegalArgumentException("가입되지 않은 닉네임입니다."));
 	}
+
+	/**
+	 * 계정 삭제 처리
+	 */
+	public void deleteAccount(String userId) {
+
+		userRepository.deleteById(Long.valueOf(userId));
+	}
 }

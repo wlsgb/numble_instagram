@@ -4,10 +4,13 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.instagram.numble_instagram.model.entity.jwt.RefreshTokenEntity;
 
+
 @Repository
+@Transactional
 public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity, Long> {
 
 	/**
@@ -23,5 +26,6 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity
 	/**
 	 * 토큰 삭제
 	 */
-	void deleteByKeyUserId(String keyUserId);
+	@Transactional
+	void deleteAllByKeyUserId(String keyUserId);
 }

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.instagram.numble_instagram.config.jwt.JwtTokenProvider;
@@ -12,12 +13,13 @@ import com.instagram.numble_instagram.model.dto.jwt.Token;
 import com.instagram.numble_instagram.model.entity.jwt.RefreshTokenEntity;
 import com.instagram.numble_instagram.repository.jwt.RefreshTokenRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+
 @Slf4j
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Service
 public class JwtService {
 
@@ -40,7 +42,8 @@ public class JwtService {
 		if (refreshTokenRepository.existsByKeyUserId(userId)) {
 			log.debug("이미 존재하는 refresh 토큰 삭제 - [keyUserId : {}]", userId);
 			// 이미 존재하는 refresh 토큰 삭제
-			refreshTokenRepository.deleteByKeyUserId(userId);
+			refreshTokenRepository.deleteAllByKeyUserId(userId);
+			refreshTokenRepository.flush();
 		}
 
 		// refresh 토큰 저장
