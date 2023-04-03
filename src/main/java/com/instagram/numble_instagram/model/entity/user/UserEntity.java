@@ -58,7 +58,7 @@ public class UserEntity implements Serializable {
 	@Comment("닉네임")
 	private String nickname;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "IMAGE_ID")
 	@Comment("이미지")
 	private ImageEntity image;
