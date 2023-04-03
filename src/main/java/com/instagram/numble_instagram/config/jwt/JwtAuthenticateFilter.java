@@ -35,7 +35,7 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
 	) throws ServletException, IOException {
 		log.debug("JwtAuthenticateFilter 호출");
 
-		String authorization = request.getHeader("Authorization");
+		String authorization = jwtTokenProvider.resolveToken(request);
 		String token = "";
 		String userId = "";
 

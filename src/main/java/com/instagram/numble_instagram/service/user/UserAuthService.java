@@ -3,10 +3,11 @@ package com.instagram.numble_instagram.service.user;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.instagram.numble_instagram.model.dto.user.SignInRequest;
-import com.instagram.numble_instagram.model.dto.user.SignUpRequest;
+import com.instagram.numble_instagram.model.dto.user.LoginRequest;
+import com.instagram.numble_instagram.model.dto.user.JoinRequest;
 import com.instagram.numble_instagram.model.entity.image.ImageEntity;
 import com.instagram.numble_instagram.model.entity.user.UserEntity;
 import com.instagram.numble_instagram.repository.image.ImageRepository;
@@ -28,7 +29,7 @@ public class UserAuthService {
 	 * 회원가입
 	 */
 	@Transactional
-	public UserEntity signUp(SignUpRequest dto) {
+	public UserEntity joinUser(JoinRequest dto) {
 		// 닉네임 검증
 		Optional<UserEntity> validateUser = userRepository.findByNickname(dto.getNickname());
 		// 동일한 닉네임이 존재하는 경우
@@ -50,9 +51,9 @@ public class UserAuthService {
 	/**
 	 * 로그인
 	 */
-	public UserEntity signIn(SignInRequest dto) {
+	public UserEntity signIn(LoginRequest dto) {
 		return userRepository.findByNickname(dto.getNickname())
-				.orElseThrow(() -> new IllegalArgumentException("가입되지 않은 닉네임입니다."));
+				.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 	}
 
 	/**

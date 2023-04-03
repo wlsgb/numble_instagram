@@ -13,7 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class SignUpRequest {
+public class JoinRequest {
 	// 닉네임
 	private String nickname;
 	// 프로필 사진

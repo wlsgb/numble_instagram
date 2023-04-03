@@ -1,5 +1,6 @@
 package com.instagram.numble_instagram.config.jwt;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
@@ -93,6 +94,13 @@ public class JwtTokenProvider {
 			.refreshToken(refreshToken)
 			.key(getUserIdByAccessToken(accessToken))
 			.build();
+	}
+
+	/**
+	 * Request의 Header에서 token 값을 가져옴
+	 */
+	public String resolveToken(HttpServletRequest request) {
+		return request.getHeader("Authorization");
 	}
 
 	/**
@@ -220,7 +228,8 @@ public class JwtTokenProvider {
 	 * 토큰 유효성 검사
 	 */
 	private boolean isValidToken(String token, Key secret, UserDetails userDetails) {
-		String userId = getUserIdByToken(token, secret);
+		String userId = getNicknameByToken(token, secret);
+		log.debug("userId: {}, userDetails - [{}]", userId, userDetails.toString());
 		return (userId.equals(userDetails.getUsername())) && !isTokenExpired(token, secret);
 	}
 

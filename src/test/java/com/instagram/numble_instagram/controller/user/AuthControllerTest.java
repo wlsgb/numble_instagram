@@ -38,14 +38,14 @@ class AuthControllerTest {
 
 	@Test
 	@DisplayName("로그인 jwt 테스트")
-	public void signInTokenTest() throws Exception {
+	public void loginTest() throws Exception {
 		String body = new ObjectMapper().writeValueAsString(
 			UserEntity.builder()
 				.nickname("테스트 계정")
 				.build()
 		);
 
-		mvc.perform(post("/sign-in")
+		mvc.perform(post("/login")
 				// Mockmvc에 바디 데이터 추가
 				.content(body)
 				// 받을 데이터 타입 설정 --> JSON으로 받기 때문에 해당 설정 ON

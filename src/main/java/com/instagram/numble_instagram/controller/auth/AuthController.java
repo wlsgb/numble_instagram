@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.instagram.numble_instagram.config.jwt.JwtTokenProvider;
 import com.instagram.numble_instagram.model.dto.jwt.Token;
-import com.instagram.numble_instagram.model.dto.user.SignInRequest;
-import com.instagram.numble_instagram.model.dto.user.SignUpRequest;
+import com.instagram.numble_instagram.model.dto.user.LoginRequest;
+import com.instagram.numble_instagram.model.dto.user.JoinRequest;
 import com.instagram.numble_instagram.model.entity.user.UserEntity;
 import com.instagram.numble_instagram.service.jwt.JwtService;
 import com.instagram.numble_instagram.service.user.UserAuthService;
@@ -30,10 +30,10 @@ public class AuthController {
 	/**
 	 * 회원가입
 	 */
-	@PostMapping("/sign-up")
-	public ResponseEntity<?> getSignInToken(@RequestBody SignUpRequest signUpRequest) {
+	@PostMapping("/join")
+	public ResponseEntity<?> joinUser(@RequestBody JoinRequest joinRequest) {
 		// 회원 가입 처리
-		UserEntity user = userAuthService.signUp(signUpRequest);
+		UserEntity user = userAuthService.joinUser(joinRequest);
 		// 회원 가입 검증
 		if (user == null || !StringUtils.hasText(user.getUserId().toString()))
 			throw new RuntimeException("회원가입에 실패하였습니다.");
@@ -44,10 +44,10 @@ public class AuthController {
 	/**
 	 * 로그인
 	 */
-	@PostMapping("/sign-in")
-	public ResponseEntity<Token> getSignInToken(
+	@PostMapping("/login")
+	public ResponseEntity<Token> getLoginToken(
 		HttpServletResponse response,
-		@RequestBody SignInRequest signInRequest
+		@RequestBody LoginRequest signInRequest
 	) {
 		log.info("로그인 요청 - [닉네임: {}]", signInRequest.getNickname());
 		UserEntity user = userAuthService.signIn(signInRequest);
