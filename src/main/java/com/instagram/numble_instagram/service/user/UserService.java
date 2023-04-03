@@ -16,10 +16,18 @@ public class UserService {
 	private final UserRepository userRepository;
 
 	/**
-	 * 회원 조회
+	 * 회원키로 회원 조회
 	 */
 	public UserEntity getUserById(Long userId) {
 		return userRepository.findById(userId)
 			.orElseThrow(() -> new IllegalArgumentException("회원 정보가 존재하지 않습니다."));
+	}
+
+	/**
+	 * 닉네임으로 회원 조회
+	 */
+	public UserEntity getUserByNickname(String nickname) {
+		return userRepository.findByNickname(nickname)
+				.orElseThrow(() -> new IllegalArgumentException("회원 정보가 존재하지 않습니다."));
 	}
 }
