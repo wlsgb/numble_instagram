@@ -24,8 +24,19 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity
 	boolean existsByKeyUserId(String keyUserId);
 
 	/**
-	 * 토큰 삭제
+	 * Refresh 토큰 존재 여부
+	 */
+	boolean existsByRefreshToken(String refreshToken);
+
+	/**
+	 * 리프레시 토큰 삭제
 	 */
 	@Transactional
 	void deleteAllByKeyUserId(String keyUserId);
+
+	/**
+	 * 리프레시 토큰 삭제
+	 */
+	@Transactional
+	void deleteByRefreshToken(String refreshToken);
 }
