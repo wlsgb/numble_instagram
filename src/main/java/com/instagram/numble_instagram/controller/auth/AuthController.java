@@ -1,5 +1,6 @@
 package com.instagram.numble_instagram.controller.auth;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,8 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.instagram.numble_instagram.config.jwt.JwtTokenProvider;
 import com.instagram.numble_instagram.model.dto.jwt.Token;
-import com.instagram.numble_instagram.model.dto.user.JoinRequest;
-import com.instagram.numble_instagram.model.dto.user.LoginRequest;
+import com.instagram.numble_instagram.model.dto.user.request.JoinRequest;
+import com.instagram.numble_instagram.model.dto.user.request.LoginRequest;
 import com.instagram.numble_instagram.model.entity.user.UserEntity;
 import com.instagram.numble_instagram.service.jwt.JwtService;
 import com.instagram.numble_instagram.service.user.UserAuthService;
@@ -30,7 +31,7 @@ public class AuthController {
 	 * 회원가입
 	 */
 	@PostMapping("/join")
-	public ResponseEntity<?> joinUser(@RequestBody JoinRequest joinRequest) {
+	public ResponseEntity<HttpStatus> joinUser(@RequestBody JoinRequest joinRequest) {
 		// 회원 가입 처리
 		UserEntity user = userAuthService.joinUser(joinRequest);
 		// 회원 가입 검증
@@ -60,7 +61,7 @@ public class AuthController {
 	}
 
 	@PostMapping(value = "/delete-account")
-	public ResponseEntity<?> deleteAccount(
+	public ResponseEntity<HttpStatus> deleteAccount(
 		HttpServletRequest request
 	) {
 		return ResponseEntity.ok().build();
