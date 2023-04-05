@@ -1,9 +1,9 @@
-package com.instagram.numble_instagram.repository.post;
+package com.instagram.numble_instagram.repository.feed;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.instagram.numble_instagram.model.entity.post.PostEntity;
+import com.instagram.numble_instagram.model.entity.feed.PostEntity;
 
 @Repository
 public interface PostRepository extends JpaRepository<PostEntity, Long> {

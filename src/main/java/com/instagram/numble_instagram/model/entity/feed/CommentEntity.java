@@ -1,6 +1,5 @@
-package com.instagram.numble_instagram.model.entity.post;
+package com.instagram.numble_instagram.model.entity.feed;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -13,10 +12,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.Where;
 
-import com.instagram.numble_instagram.model.entity.image.ImageEntity;
 import com.instagram.numble_instagram.model.entity.user.UserEntity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -27,7 +24,6 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -38,36 +34,35 @@ import lombok.NoArgsConstructor;
 @Getter
 @DynamicInsert
 @DynamicUpdate
-@SQLDelete(sql = "UPDATE POST SET DELETED = TRUE WHERE USER_ID = ?", check = ResultCheckStyle.COUNT)
+@SQLDelete(sql = "UPDATE COMMENT SET DELETED = TRUE WHERE USER_ID = ?", check = ResultCheckStyle.COUNT)
 @Where(clause = "DELETED = FALSE")
 @Entity
-@Table(name = "POST", indexes = {
-	@Index(name = "POST_INDEX1", columnList = "DELETED"),
+@Table(name = "COMMENT", indexes = {
+	@Index(name = "COMMENT_INDEX1", columnList = "DELETED"),
 })
-@Comment("글 테이블")
-public class PostEntity implements Serializable {
+@Comment("댓글 테이블")
+public class CommentEntity {
 
 	@Builder
-	public PostEntity(String content, ImageEntity image, UserEntity user) {
+	public CommentEntity(String content, PostEntity post, UserEntity user) {
 		this.content = content;
-		this.image = image;
+		this.post = post;
 		this.user = user;
 	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "POST_ID")
-	@Comment("글 ID")
-	private Long postId;
+	@Comment("댓글 ID")
+	private Long commentId;
 
 	@Column(name = "CONTENT", columnDefinition = "NVARCHAR(2000)")
 	@Comment("내용")
 	private String content;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "IMAGE_ID")
-	@Comment("이미지 ID")
-	private ImageEntity image;
+	@ManyToOne
+	@JoinColumn(name = "POST_ID")
+	@Comment("글 ID")
+	private PostEntity post;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "USER_ID")
@@ -88,7 +83,6 @@ public class PostEntity implements Serializable {
 	@Comment("삭제 여부")
 	private boolean deleted = Boolean.FALSE;
 
-	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<CommentEntity> commentList;
-
+	@OneToMany(mappedBy = "comment")
+	private List<ReplyEntity> replyList;
 }
