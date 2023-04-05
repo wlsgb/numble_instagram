@@ -1,6 +1,7 @@
 package com.instagram.numble_instagram.config.security;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,15 +9,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.instagram.numble_instagram.model.entity.user.UserEntity;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
+@Getter
 public class SecurityUser implements UserDetails {
 
 	private UserEntity user;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Override
