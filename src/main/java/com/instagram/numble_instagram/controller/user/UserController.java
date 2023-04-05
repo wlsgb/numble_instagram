@@ -2,11 +2,12 @@ package com.instagram.numble_instagram.controller.user;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.instagram.numble_instagram.config.security.SecurityUser;
+import com.instagram.numble_instagram.model.dto.user.response.UserResponse;
 import com.instagram.numble_instagram.service.user.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,10 +25,10 @@ public class UserController {
 	 * 본인 계정 정보 조회
 	 */
 	@GetMapping(value = "/me")
-	public ResponseEntity<?> getUser(
-			@AuthenticationPrincipal UserDetails userDetails
+	public ResponseEntity<UserResponse> getUser(
+		@AuthenticationPrincipal SecurityUser user
 	) {
-		return ResponseEntity.ok(userService.getUserByNickname(userDetails.getUsername()));
+		return ResponseEntity.ok(UserResponse.convertResponse(user.getUser()));
 	}
 
 }
