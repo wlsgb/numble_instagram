@@ -8,14 +8,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.instagram.numble_instagram.config.jwt.JwtTokenProvider;
 import com.instagram.numble_instagram.model.dto.jwt.Token;
-import com.instagram.numble_instagram.model.dto.user.LoginRequest;
 import com.instagram.numble_instagram.model.dto.user.JoinRequest;
+import com.instagram.numble_instagram.model.dto.user.LoginRequest;
 import com.instagram.numble_instagram.model.entity.user.UserEntity;
 import com.instagram.numble_instagram.service.jwt.JwtService;
 import com.instagram.numble_instagram.service.user.UserAuthService;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,7 +45,6 @@ public class AuthController {
 	 */
 	@PostMapping("/login")
 	public ResponseEntity<Token> getLoginToken(
-		HttpServletResponse response,
 		@RequestBody LoginRequest signInRequest
 	) {
 		log.info("로그인 요청 - [닉네임: {}]", signInRequest.getNickname());
@@ -58,8 +56,6 @@ public class AuthController {
 		);
 		log.debug("로그인 완료 - [닉네임: {}]", signInRequest.getNickname());
 		jwtService.signIn(token);
-		response.addHeader("Authorization", "Bearer " + token.getAccessToken());
-		response.addHeader("Authorization_refresh", "Bearer " + token.getRefreshToken());
 		return ResponseEntity.ok(token);
 	}
 
