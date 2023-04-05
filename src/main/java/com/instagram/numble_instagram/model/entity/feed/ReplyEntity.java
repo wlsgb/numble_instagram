@@ -42,19 +42,20 @@ import lombok.NoArgsConstructor;
 public class ReplyEntity {
 
 	@Builder
-	public ReplyEntity(String content, CommentEntity comment, UserEntity user) {
+	public ReplyEntity(Long replyId, String content, CommentEntity comment, UserEntity regUser) {
+		this.replyId = replyId;
 		this.content = content;
 		this.comment = comment;
-		this.user = user;
+		this.regUser = regUser;
 	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "REPLY_ID")
-	private Long reply_id;
+	private Long replyId;
 
 	@Column(name = "CONTENT", columnDefinition = "NVARCHAR(2000)")
-	@Comment("내용")
+	@Comment("답글 내용")
 	private String content;
 
 	@ManyToOne
@@ -64,8 +65,8 @@ public class ReplyEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "USER_ID")
-	@Comment("유저 ID")
-	private UserEntity user;
+	@Comment("답글 작성한 유저 ID")
+	private UserEntity regUser;
 
 	@CreationTimestamp
 	@Column(name = "REG_DATE", nullable = false)

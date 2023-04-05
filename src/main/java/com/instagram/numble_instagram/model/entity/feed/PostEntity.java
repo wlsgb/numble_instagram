@@ -48,10 +48,11 @@ import lombok.NoArgsConstructor;
 public class PostEntity implements Serializable {
 
 	@Builder
-	public PostEntity(String content, ImageEntity image, UserEntity user) {
+	public PostEntity(Long postId, String content, ImageEntity image, UserEntity regUser) {
+		this.postId = postId;
 		this.content = content;
 		this.image = image;
-		this.user = user;
+		this.regUser = regUser;
 	}
 
 	@Id
@@ -61,7 +62,7 @@ public class PostEntity implements Serializable {
 	private Long postId;
 
 	@Column(name = "CONTENT", columnDefinition = "NVARCHAR(2000)")
-	@Comment("내용")
+	@Comment("글 내용")
 	private String content;
 
 	@OneToOne(fetch = FetchType.LAZY)
@@ -71,8 +72,8 @@ public class PostEntity implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "USER_ID")
-	@Comment("유저 ID")
-	private UserEntity user;
+	@Comment("글 작성한 유저 ID")
+	private UserEntity regUser;
 
 	@CreationTimestamp
 	@Column(name = "REG_DATE", nullable = false)

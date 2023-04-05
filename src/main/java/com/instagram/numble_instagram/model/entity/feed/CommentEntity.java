@@ -44,10 +44,11 @@ import lombok.NoArgsConstructor;
 public class CommentEntity {
 
 	@Builder
-	public CommentEntity(String content, PostEntity post, UserEntity user) {
+	public CommentEntity(Long commentId, String content, PostEntity post, UserEntity regUser) {
+		this.commentId = commentId;
 		this.content = content;
 		this.post = post;
-		this.user = user;
+		this.regUser = regUser;
 	}
 
 	@Id
@@ -56,7 +57,7 @@ public class CommentEntity {
 	private Long commentId;
 
 	@Column(name = "CONTENT", columnDefinition = "NVARCHAR(2000)")
-	@Comment("내용")
+	@Comment("댓글 내용")
 	private String content;
 
 	@ManyToOne
@@ -66,8 +67,8 @@ public class CommentEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "USER_ID")
-	@Comment("유저 ID")
-	private UserEntity user;
+	@Comment("댓글 작성한 유저 ID")
+	private UserEntity regUser;
 
 	@CreationTimestamp
 	@Column(name = "REG_DATE", nullable = false)
