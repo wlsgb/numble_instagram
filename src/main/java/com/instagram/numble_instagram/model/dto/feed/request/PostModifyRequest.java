@@ -1,4 +1,4 @@
-package com.instagram.numble_instagram.model.dto.user;
+package com.instagram.numble_instagram.model.dto.feed.request;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,9 +13,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class JoinRequest {
-	// 닉네임
-	private String nickname;
-	// 프로필 사진
-	private MultipartFile profileImage;
+public class PostModifyRequest {
+	private Long postId;
+	private String content;
+	private MultipartFile image;
 }

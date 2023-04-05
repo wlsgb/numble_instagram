@@ -1,4 +1,4 @@
-package com.instagram.numble_instagram.model.dto.user;
+package com.instagram.numble_instagram.model.dto.user.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
