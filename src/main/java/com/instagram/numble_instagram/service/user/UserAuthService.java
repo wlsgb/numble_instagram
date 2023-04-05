@@ -6,8 +6,8 @@ import java.util.UUID;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.instagram.numble_instagram.model.dto.user.LoginRequest;
-import com.instagram.numble_instagram.model.dto.user.JoinRequest;
+import com.instagram.numble_instagram.model.dto.user.request.LoginRequest;
+import com.instagram.numble_instagram.model.dto.user.request.JoinRequest;
 import com.instagram.numble_instagram.model.entity.image.ImageEntity;
 import com.instagram.numble_instagram.model.entity.user.UserEntity;
 import com.instagram.numble_instagram.repository.image.ImageRepository;
