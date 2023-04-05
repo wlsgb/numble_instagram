@@ -8,6 +8,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.ResultCheckStyle;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.Where;
 
 import com.instagram.numble_instagram.model.entity.user.UserEntity;
@@ -73,8 +74,12 @@ public class ReplyEntity {
 	@Comment("등록 날짜")
 	private LocalDateTime regDate;
 
+	@UpdateTimestamp
+	@Column(name = "UPD_DATE", nullable = false)
+	@Comment("수정 날짜")
+	private LocalDateTime updDate;
+
 	@Column(name = "DELETED", nullable = false)
 	@Comment("삭제 여부")
 	private boolean deleted = Boolean.FALSE;
-
 }

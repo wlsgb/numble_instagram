@@ -78,7 +78,7 @@ public class CommentEntity {
 	@UpdateTimestamp
 	@Column(name = "UPD_DATE", nullable = false)
 	@Comment("수정 날짜")
-	private LocalDateTime UpdDate;
+	private LocalDateTime updDate;
 
 	@Column(name = "DELETED", nullable = false)
 	@Comment("삭제 여부")

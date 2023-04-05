@@ -1,6 +1,5 @@
 package com.instagram.numble_instagram.model.entity.feed;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -45,7 +44,7 @@ import lombok.NoArgsConstructor;
 	@Index(name = "POST_INDEX1", columnList = "DELETED"),
 })
 @Comment("글 테이블")
-public class PostEntity implements Serializable {
+public class PostEntity {
 
 	@Builder
 	public PostEntity(Long postId, String content, ImageEntity image, UserEntity regUser) {
@@ -83,7 +82,7 @@ public class PostEntity implements Serializable {
 	@UpdateTimestamp
 	@Column(name = "UPD_DATE", nullable = false)
 	@Comment("수정 날짜")
-	private LocalDateTime UpdDate;
+	private LocalDateTime updDate;
 
 	@Column(name = "DELETED", nullable = false)
 	@Comment("삭제 여부")

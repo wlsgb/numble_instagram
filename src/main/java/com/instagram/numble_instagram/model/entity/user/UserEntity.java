@@ -52,7 +52,7 @@ public class UserEntity implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "USER_ID")
 	@Comment("유저 ID")
-	private Long userId; // 유저 ID
+	private Long userId;
 
 	@Column(name = "NICKNAME", length = 100, nullable = false, unique = true)
 	@Comment("닉네임")
@@ -71,7 +71,7 @@ public class UserEntity implements Serializable {
 	@UpdateTimestamp
 	@Column(name = "UPD_DATE", nullable = false)
 	@Comment("수정 날짜")
-	private LocalDateTime UpdDate;
+	private LocalDateTime updDate;
 
 	@Column(name = "DELETED", nullable = false)
 	@Comment("삭제 여부")
