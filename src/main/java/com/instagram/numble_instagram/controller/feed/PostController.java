@@ -16,6 +16,7 @@ import com.instagram.numble_instagram.model.dto.feed.request.PostSaveRequest;
 import com.instagram.numble_instagram.model.dto.feed.response.PostResponse;
 import com.instagram.numble_instagram.service.feed.PostService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +33,7 @@ public class PostController {
 	 */
 	@PostMapping()
 	public ResponseEntity<PostResponse> savePost(
-		@RequestBody PostSaveRequest dto,
+		@Valid @RequestBody PostSaveRequest dto,
 		@AuthenticationPrincipal SecurityUser user
 	) {
 		dto.setUserId(user.getUser().getUserId());
@@ -44,7 +45,7 @@ public class PostController {
 	 */
 	@PutMapping()
 	public ResponseEntity<PostResponse> modifyPost(
-		@RequestBody PostModifyRequest dto
+		@Valid @RequestBody PostModifyRequest dto
 	) {
 		return ResponseEntity.ok(postService.modifyPost(dto));
 	}

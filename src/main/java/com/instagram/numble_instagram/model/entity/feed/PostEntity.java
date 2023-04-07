@@ -64,7 +64,7 @@ public class PostEntity {
 	@Comment("글 내용")
 	private String content;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "IMAGE_ID")
 	@Comment("이미지 ID")
 	private ImageEntity image;

@@ -1,8 +1,12 @@
 package com.instagram.numble_instagram.service.feed;
 
+import java.util.List;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.instagram.numble_instagram.model.dto.CursorResult;
 import com.instagram.numble_instagram.model.dto.feed.request.PostModifyRequest;
 import com.instagram.numble_instagram.model.dto.feed.request.PostSaveRequest;
 import com.instagram.numble_instagram.model.dto.feed.response.PostResponse;
@@ -26,14 +30,55 @@ public class PostService {
 	private final ImageService imageService;
 
 	/**
+	 * 글 목록 조회
+	 */
+	@Transactional
+	public CursorResult<PostResponse> getPostList(Long cursorId, Pageable page) {
+		// 글 목록 조회
+		final List<PostEntity> postList = getPagingPostList(cursorId, page);
+		// 마지막 글 아이디
+		final Long lastPostIdOfList = postList.isEmpty() ?
+			null : postList.get(postList.size() - 1).getPostId();
+
+		return CursorResult.<PostResponse>builder()
+			.list(postList.stream()
+				.map(PostResponse::convertResponse)
+				.toList())
+			.hasNext(hasNext(lastPostIdOfList))
+			.build();
+	}
+
+	/**
+	 * 페이징 된 글 목록 조회
+	 */
+	private List<PostEntity> getPagingPostList(Long postId, Pageable page) {
+		return postId == null ?
+			postRepository.findAllByOrderByPostIdDesc(page) :
+			postRepository.findByPostIdLessThanOrderByPostIdDesc(postId, page);
+	}
+
+	/**
+	 * 다음 글이 존재하는지 여부
+	 */
+	private Boolean hasNext(Long postId) {
+		if (postId == null)
+			return false;
+		return postRepository.existsByPostIdLessThan(postId);
+	}
+
+	/**
 	 * 글 저장
 	 */
 	@Transactional
 	public PostResponse savePost(PostSaveRequest dto) {
 		// 유저 정보 조회
 		UserEntity regUser = userRepository.getReferenceById(dto.getUserId());
-		// 이미지 저장
-		ImageEntity saveImage = imageService.saveImage(dto.getImage(), regUser);
+		ImageEntity saveImage = null;
+		// 이미지가 존재하는 경우
+		if (dto.getImage() != null) {
+			// 이미지 저장
+			saveImage = imageService.saveImage(dto.getImage(), regUser);
+		}
 		// 글 저장
 		PostEntity newPost = postRepository.save(
 			PostEntity.builder()
@@ -52,7 +97,7 @@ public class PostService {
 	public PostResponse modifyPost(PostModifyRequest dto) {
 		// 기존에 작성된 글
 		PostEntity oldPost = postRepository.getReferenceById(dto.getPostId());
-		// 신규로 저장할 이미지가 존재하는 경우
+		// 이미지를 변경하지 않는 경우
 		if (dto.getImage() != null) {
 			// 이미지 삭제
 			imageService.deleteImage(oldPost.getImage().getImageId());
