@@ -1,6 +1,7 @@
 package com.instagram.numble_instagram.model.dto.feed.response;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import com.instagram.numble_instagram.model.dto.user.response.UserResponse;
@@ -36,9 +37,11 @@ public class CommentResponse {
 			.regDate(comment.getRegDate())
 			.updDate(comment.getUpdDate())
 			.replyList(
-				comment.getReplyList().stream()
-				.map(ReplyResponse::convertResponse)
-				.toList()
+				comment.getReplyList() == null ?
+					Collections.emptyList() :
+					comment.getReplyList().stream()
+						.map(ReplyResponse::convertResponse)
+						.toList()
 			)
 			.build();
 	}
