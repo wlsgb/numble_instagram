@@ -1,4 +1,4 @@
-package com.instagram.numble_instagram.controller.post;
+package com.instagram.numble_instagram.controller.feed;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/post")
+@RequestMapping(value = "/feed/post")
 public class PostController {
 
 	private final PostService postService;
