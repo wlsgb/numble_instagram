@@ -2,20 +2,23 @@ package com.instagram.numble_instagram.controller.auth;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.instagram.numble_instagram.config.jwt.JwtTokenProvider;
+import com.instagram.numble_instagram.config.security.SecurityUser;
 import com.instagram.numble_instagram.model.dto.jwt.Token;
 import com.instagram.numble_instagram.model.dto.user.request.JoinRequest;
 import com.instagram.numble_instagram.model.dto.user.request.LoginRequest;
 import com.instagram.numble_instagram.model.entity.user.UserEntity;
 import com.instagram.numble_instagram.service.jwt.JwtService;
-import com.instagram.numble_instagram.service.user.UserAuthService;
+import com.instagram.numble_instagram.service.user.AuthService;
+import com.instagram.numble_instagram.service.user.UserService;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,7 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthController {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final JwtService jwtService;
-	private final UserAuthService userAuthService;
+	private final UserService userService;
+	private final AuthService authService;
 
 	/**
 	 * 회원가입
@@ -33,7 +37,7 @@ public class AuthController {
 	@PostMapping("/join")
 	public ResponseEntity<HttpStatus> joinUser(@RequestBody JoinRequest joinRequest) {
 		// 회원 가입 처리
-		UserEntity user = userAuthService.joinUser(joinRequest);
+		UserEntity user = authService.joinUser(joinRequest);
 		// 회원 가입 검증
 		if (user == null || !StringUtils.hasText(user.getUserId().toString()))
 			throw new RuntimeException("회원가입에 실패하였습니다.");
@@ -49,7 +53,7 @@ public class AuthController {
 		@RequestBody LoginRequest signInRequest
 	) {
 		log.info("로그인 요청 - [닉네임: {}]", signInRequest.getNickname());
-		UserEntity user = userAuthService.signIn(signInRequest);
+		UserEntity user = authService.signIn(signInRequest);
 
 		Token token = jwtTokenProvider.createToken(
 			String.valueOf(user.getUserId()),
@@ -60,10 +64,14 @@ public class AuthController {
 		return ResponseEntity.ok(token);
 	}
 
-	@PostMapping(value = "/delete-account")
+	/**
+	 * 회원 탈퇴
+	 */
+	@DeleteMapping(value = "/account")
 	public ResponseEntity<HttpStatus> deleteAccount(
-		HttpServletRequest request
+		@AuthenticationPrincipal SecurityUser user
 	) {
+		authService.deleteAccount(user.getUser().getUserId());
 		return ResponseEntity.ok().build();
 	}
 }

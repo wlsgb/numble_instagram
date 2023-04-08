@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class UserAuthService {
+public class AuthService {
 
 	private final UserRepository userRepository;
 	private final ImageRepository imageRepository;
@@ -59,8 +59,12 @@ public class UserAuthService {
 	/**
 	 * 계정 삭제 처리
 	 */
-	public void deleteAccount(String userId) {
-
-		userRepository.deleteById(Long.valueOf(userId));
+	public void deleteAccount(Long userId) {
+		UserEntity oldUser = userRepository.getReferenceById(userId);
+		// 프로필 이미지 존재하는 경우 삭제
+		if (oldUser.getImage() != null)
+			imageRepository.delete(oldUser.getImage());
+		// 계정 삭제
+		userRepository.deleteById(userId);
 	}
 }
