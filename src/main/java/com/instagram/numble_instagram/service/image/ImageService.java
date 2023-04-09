@@ -59,4 +59,11 @@ public class ImageService {
 		imageRepository.deleteById(imageId);
 	}
 
+	/**
+	 * 이미지 삭제
+	 */
+	public void deleteImage(ImageEntity image) {
+		imageRepository.delete(image);
+	}
+
 }
