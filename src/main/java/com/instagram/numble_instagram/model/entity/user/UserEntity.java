@@ -43,7 +43,8 @@ import lombok.NoArgsConstructor;
 public class UserEntity implements Serializable {
 
 	@Builder
-	public UserEntity(String nickname, ImageEntity image) {
+	public UserEntity(Long userId, String nickname, ImageEntity image) {
+		this.userId = userId;
 		this.nickname = nickname;
 		this.image = image;
 	}
