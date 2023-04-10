@@ -1,63 +1,63 @@
 package com.instagram.numble_instagram.controller.feed;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.instagram.numble_instagram.config.security.SecurityUser;
 import com.instagram.numble_instagram.model.dto.feed.request.PostModifyRequest;
-import com.instagram.numble_instagram.model.dto.feed.request.PostSaveRequest;
+import com.instagram.numble_instagram.model.dto.feed.request.PostRegisterRequest;
 import com.instagram.numble_instagram.model.dto.feed.response.PostResponse;
-import com.instagram.numble_instagram.service.feed.PostService;
-
+import com.instagram.numble_instagram.usecase.post.CreatePostUseCase;
+import com.instagram.numble_instagram.usecase.post.DeletePostUseCase;
+import com.instagram.numble_instagram.usecase.post.UpdatePostUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/feed/post")
+@RequestMapping(value = "/api/feed/post")
 public class PostController {
 
-	private final PostService postService;
+    private final CreatePostUseCase createPostUseCase;
+    private final UpdatePostUseCase updatePostUseCase;
+    private final DeletePostUseCase deletePostUseCase;
 
-	/**
-	 * 글 생성
-	 */
-	@PostMapping()
-	public ResponseEntity<PostResponse> savePost(
-		@Valid @RequestBody PostSaveRequest dto,
-		@AuthenticationPrincipal SecurityUser user
-	) {
-		dto.setUserId(user.getUser().getUserId());
-		return ResponseEntity.ok(postService.savePost(dto));
-	}
+    /**
+     * 글 생성
+     */
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<PostResponse> savePost(
+            @Valid PostRegisterRequest dto,
+            @AuthenticationPrincipal SecurityUser user
+    ) {
+        return ResponseEntity.ok(createPostUseCase.execute(user.getUser().getUserId(), dto));
+    }
 
-	/**
-	 * 글 수정
-	 */
-	@PutMapping()
-	public ResponseEntity<PostResponse> modifyPost(
-		@Valid @RequestBody PostModifyRequest dto
-	) {
-		return ResponseEntity.ok(postService.modifyPost(dto));
-	}
+    /**
+     * 글 수정
+     */
+    @PutMapping(value = "/{postId}/modify")
+    public ResponseEntity<PostResponse> modifyPost(
+            @PathVariable Long postId,
+            @Valid @RequestBody PostModifyRequest dto,
+            @AuthenticationPrincipal SecurityUser user
+    ) {
+        return ResponseEntity.ok(updatePostUseCase.execute(user.getUser().getUserId(), postId, dto));
+    }
 
-	/**
-	 * 글 삭제
-	 */
-	@DeleteMapping()
-	public ResponseEntity<HttpStatus> deletePost(
-		@RequestBody Long postId
-	) {
-		postService.deletePost(postId);
-		return ResponseEntity.ok().build();
-	}
+    /**
+     * 글 삭제
+     */
+    @DeleteMapping(value = "/{postId}")
+    public ResponseEntity<HttpStatus> deletePost(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal SecurityUser user
+    ) {
+        deletePostUseCase.execute(user.getUser().getUserId(), postId);
+        return ResponseEntity.ok().build();
+    }
 }
