@@ -4,6 +4,7 @@ import com.instagram.numble_instagram.exception.invalidRequest.NotImageFileExcep
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @Service
 public class ImageFileStoreImpl implements FileStore {
 
-    private static final String PREFIX = "https://aws.s3";
+    private static final String FILE_STORE_PREFIX = "https://numble.file-store";
     private static final String DEFAULT_IMAGE_URI = "/default-image.jpg";
 
     /**
@@ -38,12 +39,12 @@ public class ImageFileStoreImpl implements FileStore {
 
         // TODO. S3 파일 업로드 로직 추가
 
-        return PREFIX + "/" + saveFilename;
+        return FILE_STORE_PREFIX + "/" + saveFilename;
     }
 
     @Override
     public void deleteFile(String fileUrl) {
-        if (fileUrl.equals(DEFAULT_IMAGE_URI))
+        if (!StringUtils.hasText(fileUrl) || fileUrl.equals(DEFAULT_IMAGE_URI))
             return;
 
         // TODO. S3 파일 삭제 로직 추가
