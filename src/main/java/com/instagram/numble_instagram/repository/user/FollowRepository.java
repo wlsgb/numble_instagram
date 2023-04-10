@@ -8,4 +8,12 @@ import com.instagram.numble_instagram.model.entity.user.UserEntity;
 public interface FollowRepository extends JpaRepository<FollowEntity, Long> {
 
 	FollowEntity findByUserAndFollowUser(UserEntity user, UserEntity followUser);
+
+	FollowEntity findAllByUser(UserEntity user);
+
+	long countAllByUser(UserEntity user);
+
+	FollowEntity findAllByFollowUser(UserEntity followUser);
+
+	long countAllByFollowUser(UserEntity followUser);
 }

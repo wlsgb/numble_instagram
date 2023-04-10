@@ -28,6 +28,7 @@ public class PostWriteService {
      */
     public PostResponse register(String content, String imageUrl, UserEntity regUser) {
         PostEntity newPost = PostEntity.register(content, imageUrl, regUser);
+        newPost = postRepository.save(newPost);
         return PostResponse.convertResponse(newPost);
     }
 

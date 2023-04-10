@@ -34,11 +34,11 @@ public class PostEntity {
     @Comment("글 내용")
     private String content;
 
-    @JoinColumn(name = "IMAGE_URL")
+    @Column(name = "IMAGE_URL")
     @Comment("이미지 URL")
     private String imageUrl;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "USER_ID")
     @Comment("글 등록한 유저 ID")
     private UserEntity regUser;

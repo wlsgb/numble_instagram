@@ -17,12 +17,12 @@ public class UpdatePostUseCase {
     private final UserService userService;
     private final PostWriteService postWriteService;
 
-    public PostResponse execute(Long userId, Long postId, PostModifyRequest postModifyRequest) {
+    public PostResponse execute(Long userId, PostModifyRequest postModifyRequest) {
         UserEntity user = userService.getUser(userId);
 
         if (!FileUtil.existFile(postModifyRequest.postImageFile()))
-            return postWriteService.modify(user, postId, postModifyRequest.content(), null);
+            return postWriteService.modify(user, postModifyRequest.postId(), postModifyRequest.content(), null);
 
-        return postWriteService.modify(user, postId, postModifyRequest.content(), postModifyRequest.postImageFile());
+        return postWriteService.modify(user, postModifyRequest.postId(), postModifyRequest.content(), postModifyRequest.postImageFile());
     }
 }

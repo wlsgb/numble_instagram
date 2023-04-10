@@ -15,8 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Service
 public class FollowService {
-	private UserRepository userRepository;
-	private FollowRepository followRepository;
+
+	private final UserRepository userRepository;
+	private final FollowRepository followRepository;
 
 	/**
 	 * 유저 팔로우

@@ -40,13 +40,12 @@ public class PostController {
     /**
      * 글 수정
      */
-    @PutMapping(value = "/{postId}/modify")
+    @PutMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PostResponse> modifyPost(
-            @PathVariable Long postId,
-            @Valid @RequestBody PostModifyRequest dto,
+            @Valid PostModifyRequest dto,
             @AuthenticationPrincipal SecurityUser user
     ) {
-        return ResponseEntity.ok(updatePostUseCase.execute(user.getUser().getUserId(), postId, dto));
+        return ResponseEntity.ok(updatePostUseCase.execute(user.getUser().getUserId(), dto));
     }
 
     /**
