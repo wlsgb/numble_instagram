@@ -1,39 +1,52 @@
 package com.instagram.numble_instagram.service.user;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.instagram.numble_instagram.model.dto.user.response.UserResponse;
+import com.instagram.numble_instagram.exception.notFound.UserNotFoundException;
+import com.instagram.numble_instagram.model.dto.user.response.ProfileResponse;
 import com.instagram.numble_instagram.model.entity.user.UserEntity;
+import com.instagram.numble_instagram.repository.user.FollowRepository;
 import com.instagram.numble_instagram.repository.user.UserRepository;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class UserService {
 
-	private final UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final FollowRepository followRepository;
 
-	/**
-	 * 회원키로 회원 조회
-	 */
-	@Transactional
-	public UserResponse getUserById(Long userId) {
-		UserEntity user = userRepository.findById(userId)
-			.orElseThrow(() -> new IllegalArgumentException("회원 정보가 존재하지 않습니다."));
-		return UserResponse.convertResponse(user);
-	}
+    /**
+     * 프로필 조회
+     */
+    public ProfileResponse getProfile(Long userId) {
+        // 프로필 조회할 타겟 유저 정보
+        UserEntity targetUser = getUser(userId);
+        // 프로필 정보
+        return ProfileResponse.builder()
+                .nickname(targetUser.getNickname())
+                .profileImage(targetUser.getProfileImageUrl())
+                .follower(followRepository.countAllByFollowUser(targetUser))
+                .following(followRepository.countAllByUser(targetUser))
+                .build();
+    }
 
-	/**
-	 * 닉네임으로 회원 조회
-	 */
-	@Transactional
-	public UserResponse getUserByNickname(String nickname) {
-		UserEntity user = userRepository.findByNickname(nickname)
-				.orElseThrow(() -> new IllegalArgumentException("회원 정보가 존재하지 않습니다."));
-		return UserResponse.convertResponse(user);
-	}
+    /**
+     * 유저 ID로 회원 조회
+     */
+    public UserEntity getUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+    }
+
+    /**
+     * 닉네임으로 회원 조회
+     */
+    public UserEntity getUser(String nickname) {
+        return userRepository.findByNickname(nickname)
+                .orElseThrow(UserNotFoundException::new);
+    }
 }

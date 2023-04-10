@@ -1,15 +1,9 @@
 package com.instagram.numble_instagram.model.dto.user.response;
 
-import java.time.LocalDateTime;
-
-import com.instagram.numble_instagram.model.dto.image.response.ImageResponse;
 import com.instagram.numble_instagram.model.entity.user.UserEntity;
+import lombok.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,22 +11,22 @@ import lombok.Setter;
 @Setter
 @Builder
 public class UserResponse {
-	private Long userId;
-	private String nickname;
-	private ImageResponse image;
-	private LocalDateTime regDate;
-	private LocalDateTime updDate;
+    private Long userId;
+    private String nickname;
+    private String profileImageUrl;
+    private LocalDateTime regDate;
+    private LocalDateTime updDate;
 
-	public static UserResponse convertResponse(UserEntity user) {
-		if (user == null)
-			return new UserResponse();
+    public static UserResponse convertResponse(UserEntity user) {
+        if (user == null)
+            return new UserResponse();
 
-		return UserResponse.builder()
-			.userId(user.getUserId())
-			.nickname(user.getNickname())
-			.image(ImageResponse.convertResponse(user.getImage()))
-			.regDate(user.getRegDate())
-			.updDate(user.getUpdDate())
-			.build();
-	}
+        return UserResponse.builder()
+                .userId(user.getUserId())
+                .nickname(user.getNickname())
+                .profileImageUrl(user.getProfileImageUrl())
+                .regDate(user.getRegDate())
+                .updDate(user.getUpdDate())
+                .build();
+    }
 }
