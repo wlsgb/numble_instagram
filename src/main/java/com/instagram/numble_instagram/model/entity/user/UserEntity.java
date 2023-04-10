@@ -1,80 +1,71 @@
 package com.instagram.numble_instagram.model.entity.user;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
-import org.hibernate.annotations.Comment;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.ResultCheckStyle;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.Where;
-
-import com.instagram.numble_instagram.model.entity.image.ImageEntity;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.*;
+
+import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @DynamicInsert
 @DynamicUpdate
-@SQLDelete(sql = "UPDATE USER SET DELETED = TRUE WHERE USER_ID = ?", check = ResultCheckStyle.COUNT)
-@Where(clause = "DELETED = FALSE")
 @Entity
 @Table(name = "USER", indexes = {
-	@Index(name = "USER_INDEX1", columnList = "DELETED"),
+        @Index(name = "USER_INDEX1", columnList = "NICKNAME"),
 })
 @Comment("유저 테이블")
-public class UserEntity implements Serializable {
+public class UserEntity {
 
-	@Builder
-	public UserEntity(Long userId, String nickname, ImageEntity image) {
-		this.userId = userId;
-		this.nickname = nickname;
-		this.image = image;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "USER_ID")
+    @Comment("유저 ID")
+    private Long userId;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "USER_ID")
-	@Comment("유저 ID")
-	private Long userId;
+    @Column(name = "NICKNAME", length = 20, nullable = false, unique = true)
+    @Comment("닉네임")
+    private String nickname;
 
-	@Column(name = "NICKNAME", length = 100, nullable = false, unique = true)
-	@Comment("닉네임")
-	private String nickname;
+    @Column(name = "PROFILE_IMAGE_URL")
+    @Comment("프로필 이미지 URL")
+    private String profileImageUrl;
 
-	@OneToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "IMAGE_ID")
-	@Comment("이미지")
-	private ImageEntity image;
+    @CreationTimestamp
+    @Column(name = "REG_DATE", updatable = false, nullable = false)
+    @Comment("등록 날짜")
+    private LocalDateTime regDate;
 
-	@CreationTimestamp
-	@Column(name = "REG_DATE", nullable = false)
-	@Comment("등록 날짜")
-	private LocalDateTime regDate;
+    @UpdateTimestamp
+    @Column(name = "UPD_DATE", nullable = false)
+    @Comment("수정 날짜")
+    private LocalDateTime updDate;
 
-	@UpdateTimestamp
-	@Column(name = "UPD_DATE", nullable = false)
-	@Comment("수정 날짜")
-	private LocalDateTime updDate;
+    @Builder
+    public UserEntity(String nickname, String profileImageUrl) {
+        this.nickname = nickname;
+        this.profileImageUrl = profileImageUrl;
+    }
 
-	@Column(name = "DELETED", nullable = false)
-	@Comment("삭제 여부")
-	private boolean deleted = Boolean.FALSE;
+    public static UserEntity join(String nickname, String profileImageUrl) {
+        return UserEntity.builder()
+                .nickname(nickname)
+                .profileImageUrl(profileImageUrl)
+                .build();
+    }
+
+    public void changeNickname(String newNickname) {
+        if (this.nickname.equals(newNickname))
+            return;
+        this.nickname = newNickname;
+    }
+
+    public void changeProfileImageUrl(String newProfileImageUrl) {
+        this.profileImageUrl = newProfileImageUrl;
+    }
 }

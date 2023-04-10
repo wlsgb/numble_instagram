@@ -1,103 +1,106 @@
 package com.instagram.numble_instagram.service.user;
 
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import com.instagram.numble_instagram.model.dto.user.request.JoinRequest;
+import com.instagram.numble_instagram.exception.notFound.UserNotFoundException;
 import com.instagram.numble_instagram.model.dto.user.request.LoginRequest;
+import com.instagram.numble_instagram.model.dto.user.request.UserJoinRequest;
 import com.instagram.numble_instagram.model.dto.user.request.UserModifyRequest;
-import com.instagram.numble_instagram.model.entity.image.ImageEntity;
+import com.instagram.numble_instagram.model.dto.user.response.UserResponse;
 import com.instagram.numble_instagram.model.entity.user.UserEntity;
 import com.instagram.numble_instagram.repository.user.UserRepository;
-import com.instagram.numble_instagram.service.image.ImageService;
-
+import com.instagram.numble_instagram.util.file.ImageFileStoreImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class AuthService {
 
-	private final UserRepository userRepository;
-	private final ImageService imageService;
+    private final UserRepository userRepository;
+    private final ImageFileStoreImpl imageFileStore;
 
-	/**
-	 * 회원가입
-	 */
-	@Transactional
-	public UserEntity joinUser(JoinRequest dto) {
-		// 신규 유저
-		UserEntity newUser = userRepository.findByNickname(dto.getNickname())
-			.orElseThrow(() -> new RuntimeException("동일한 닉네임을 가진 유저가 존재합니다."));
+    /**
+     * 회원가입
+     */
+    public UserResponse join(UserJoinRequest userJoinRequest) {
+        validateDuplicateNickname(userJoinRequest.getNickname());
+        String profileImageUrl = imageFileStore.uploadFile(userJoinRequest.getProfileImage());
+        UserEntity newUser = UserEntity.join(userJoinRequest.getNickname(), profileImageUrl);
+        // 회원 저장
+        userRepository.save(newUser);
+        return UserResponse.convertResponse(newUser);
+    }
 
-		// 프로필 사진 업로드
-		ImageEntity saveImage = null;
-		if (dto.getProfileImage() != null) {
-			// 이미지 저장
-			saveImage = imageService.saveImage(dto.getProfileImage(), newUser);
-		}
+    /**
+     * 로그인
+     */
+    public UserResponse login(LoginRequest dto) {
+        UserEntity loginUser = userRepository.findByNickname(dto.getNickname())
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+        return UserResponse.convertResponse(loginUser);
+    }
 
-		// 회원 가입
-		return userRepository.save(
-			UserEntity.builder()
-				.nickname(dto.getNickname())
-				.image(saveImage)
-				.build()
-		);
-	}
+    /**
+     * 회원 정보 수정
+     */
+    public UserResponse modify(UserModifyRequest dto) {
+        // 기존 회원 정보
+        UserEntity user = userRepository.findById(dto.getUserId())
+                .orElseThrow(UserNotFoundException::new);
+        checkNicknameAndChange(dto.getNickname(), user);
+        checkImageFileAndChange(dto.getProfileImage(), user);
+        return UserResponse.convertResponse(user);
+    }
 
-	/**
-	 * 로그인
-	 */
-	public UserEntity signIn(LoginRequest dto) {
-		return userRepository.findByNickname(dto.getNickname())
-			.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
-	}
+    /**
+     * 계정 삭제 처리
+     */
+    public void delete(Long userId) {
+        UserEntity user = userRepository.getReferenceById(userId);
+        imageFileStore.deleteFile(user.getProfileImageUrl());
+        userRepository.deleteById(userId);
+    }
 
-	/**
-	 * 유저 정보 수정
-	 */
-	public UserEntity modifyUser(UserModifyRequest dto) {
-		UserEntity oldUser = userRepository.findById(dto.getUserId())
-			.orElseThrow(() -> new RuntimeException("계정 정보가 존재하지 않습니다."));
+    /**
+     * 닉네임 체크 후 변경
+     */
+    private void checkNicknameAndChange(String nickname, UserEntity user) {
+        if (StringUtils.hasText(nickname) && !user.getNickname().equals(nickname))
+            validateDuplicateNickname(nickname);
+        if (StringUtils.hasText(nickname))
+            user.changeNickname(nickname);
+    }
 
-		String saveNickname = oldUser.getNickname();
-		ImageEntity saveImage = oldUser.getImage();
+    /**
+     * 이미지 체크후 변경
+     */
+    private void checkImageFileAndChange(MultipartFile newProfileImageFile, UserEntity user) {
+        // 기존 프로필 이미지가 없는 경우
+        if (!StringUtils.hasText(user.getProfileImageUrl())) {
+            String newProfileImageUrl = imageFileStore.uploadFile(newProfileImageFile);
+            user.changeProfileImageUrl(newProfileImageUrl);
+            return;
+        }
 
-		// 닉네임 변경
-		if (StringUtils.hasText(dto.getNickname()))
-			saveNickname = dto.getNickname();
+        // 프로필 이미지를 변경하는 경우
+        if (newProfileImageFile != null && !newProfileImageFile.isEmpty()) {
+            imageFileStore.deleteFile(user.getProfileImageUrl());
+            String newProfileImageUrl = imageFileStore.uploadFile(newProfileImageFile);
+            user.changeProfileImageUrl(newProfileImageUrl);
+        }
+    }
 
-		// 프로필 사진 교체
-		if (dto.getProfileImage() != null) {
-			// 기존 이미지 삭제
-			imageService.deleteImage(oldUser.getImage());
-			// 이미지 저장
-			saveImage = imageService.saveImage(dto.getProfileImage(), oldUser);
-		}
-
-		// 회원 정보 수정
-		return userRepository.save(
-			UserEntity.builder()
-				.userId(oldUser.getUserId())
-				.nickname(saveNickname)
-				.image(saveImage)
-				.build()
-		);
-	}
-
-	/**
-	 * 계정 삭제 처리
-	 */
-	public void deleteAccount(Long userId) {
-		UserEntity oldUser = userRepository.getReferenceById(userId);
-		// 프로필 이미지 존재하는 경우 삭제
-		if (oldUser.getImage() != null)
-			imageService.deleteImage(oldUser.getImage());
-		// 계정 삭제
-		userRepository.deleteById(userId);
-	}
+    /**
+     * 닉네임 중복 검증
+     */
+    private void validateDuplicateNickname(String nickname) {
+        if (userRepository.existsByNickname(nickname))
+            throw new RuntimeException("중복된 닉네임이 존재합니다.");
+    }
 }

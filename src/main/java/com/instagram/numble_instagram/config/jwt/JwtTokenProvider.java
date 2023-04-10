@@ -228,7 +228,7 @@ public class JwtTokenProvider {
 	 * 토큰 유효성 검사
 	 */
 	private boolean isValidToken(String token, Key secret, UserDetails userDetails) {
-		String userId = getNicknameByToken(token, secret);
+		String userId = getUserIdByToken(token, secret);
 		log.debug("userId: {}, userDetails - [{}]", userId, userDetails.toString());
 		return (userId.equals(userDetails.getUsername())) && !isTokenExpired(token, secret);
 	}

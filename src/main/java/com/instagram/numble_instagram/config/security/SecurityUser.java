@@ -29,7 +29,7 @@ public class SecurityUser implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return user.getNickname();
+		return String.valueOf(user.getUserId());
 	}
 
 	@Override
