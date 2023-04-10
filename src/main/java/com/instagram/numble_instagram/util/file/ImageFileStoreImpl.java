@@ -1,5 +1,6 @@
 package com.instagram.numble_instagram.util.file;
 
+import com.instagram.numble_instagram.exception.invalidRequest.NotImageFileException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -54,7 +55,7 @@ public class ImageFileStoreImpl implements FileStore {
     private static void validateContentTypeImage(MultipartFile file) {
         String contentType = file.getContentType();
         if (contentType != null && !contentType.startsWith("image")) {
-            throw new RuntimeException("이미지 타입이 아닙니다.");
+            throw new NotImageFileException();
         }
     }
 
