@@ -62,6 +62,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine'
     testImplementation 'org.junit.jupiter:junit-jupiter-params'
+    testImplementation 'org.jeasy:easy-random-core:5.0.0'
 }
 
 tasks.named('test') {
