@@ -110,7 +110,7 @@ public class PostEntity {
      * 작성자 여부 확인
      */
     public boolean isRegUser(UserEntity user) {
-        return this.regUser.getUserId() == user.getUserId();
+        return this.regUser.equals(user);
     }
 
 }
