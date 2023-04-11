@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -52,6 +53,22 @@ public class UserEntity {
         this.profileImageUrl = profileImageUrl;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserEntity user = (UserEntity) o;
+        return Objects.equals(userId, user.userId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId);
+    }
+
+    /**
+     * 회원가입
+     */
     public static UserEntity join(String nickname, String profileImageUrl) {
         return UserEntity.builder()
                 .nickname(nickname)
@@ -59,12 +76,18 @@ public class UserEntity {
                 .build();
     }
 
+    /**
+     * 닉네임 변경
+     */
     public void changeNickname(String newNickname) {
         if (this.nickname.equals(newNickname))
             return;
         this.nickname = newNickname;
     }
 
+    /**
+     * 프로필 이미지 URL 변경
+     */
     public void changeProfileImageUrl(String newProfileImageUrl) {
         this.profileImageUrl = newProfileImageUrl;
     }
