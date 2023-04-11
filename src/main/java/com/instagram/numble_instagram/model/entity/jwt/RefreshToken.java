@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
     @Index(name = "REFRESH_TOKEN_INDEX2", columnList = "REFRESH_TOKEN")
 })
 @Comment("리프레시 토큰 테이블")
-public class RefreshTokenEntity {
+public class RefreshToken {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

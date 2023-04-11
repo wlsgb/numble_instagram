@@ -6,12 +6,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.instagram.numble_instagram.model.entity.feed.PostEntity;
+import com.instagram.numble_instagram.model.entity.feed.Post;
 
 @Repository
-public interface PostRepository extends JpaRepository<PostEntity, Long> {
+public interface PostRepository extends JpaRepository<Post, Long> {
 
-	List<PostEntity> findAllByOrderByPostIdDesc(Pageable pageable);
-	List<PostEntity> findByPostIdLessThanOrderByPostIdDesc(Long postId, Pageable pageable);
+	List<Post> findAllByOrderByPostIdDesc(Pageable pageable);
+	List<Post> findByPostIdLessThanOrderByPostIdDesc(Long postId, Pageable pageable);
 	Boolean existsByPostIdLessThan(Long postId);
 }

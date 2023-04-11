@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.instagram.numble_instagram.model.dto.user.response.UserResponse;
-import com.instagram.numble_instagram.model.entity.feed.CommentEntity;
+import com.instagram.numble_instagram.model.entity.feed.Comment;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +26,7 @@ public class CommentResponse {
 	private LocalDateTime updDate;
 	private List<ReplyResponse> replyList;
 
-	public static CommentResponse convertResponse(CommentEntity comment) {
+	public static CommentResponse convertResponse(Comment comment) {
 		if (comment == null)
 			return new CommentResponse();
 

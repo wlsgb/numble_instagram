@@ -3,7 +3,7 @@ package com.instagram.numble_instagram.model.dto.feed.response;
 import java.time.LocalDateTime;
 
 import com.instagram.numble_instagram.model.dto.user.response.UserResponse;
-import com.instagram.numble_instagram.model.entity.feed.ReplyEntity;
+import com.instagram.numble_instagram.model.entity.feed.Reply;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +23,7 @@ public class ReplyResponse {
 	private LocalDateTime regDate;
 	private LocalDateTime updDate;
 
-	public static ReplyResponse convertResponse(ReplyEntity reply) {
+	public static ReplyResponse convertResponse(Reply reply) {
 		if (reply == null)
 			return new ReplyResponse();
 

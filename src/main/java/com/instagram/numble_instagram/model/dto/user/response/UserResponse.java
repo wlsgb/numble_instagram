@@ -1,6 +1,6 @@
 package com.instagram.numble_instagram.model.dto.user.response;
 
-import com.instagram.numble_instagram.model.entity.user.UserEntity;
+import com.instagram.numble_instagram.model.entity.user.User;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -17,7 +17,7 @@ public class UserResponse {
     private LocalDateTime regDate;
     private LocalDateTime updDate;
 
-    public static UserResponse convertResponse(UserEntity user) {
+    public static UserResponse convertResponse(User user) {
         if (user == null)
             return new UserResponse();
 

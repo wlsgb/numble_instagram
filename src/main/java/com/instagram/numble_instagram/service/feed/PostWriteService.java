@@ -3,8 +3,8 @@ package com.instagram.numble_instagram.service.feed;
 import com.instagram.numble_instagram.exception.invalidRequest.NotPostRegUserException;
 import com.instagram.numble_instagram.exception.notFound.PostNotFoundException;
 import com.instagram.numble_instagram.model.dto.feed.response.PostResponse;
-import com.instagram.numble_instagram.model.entity.feed.PostEntity;
-import com.instagram.numble_instagram.model.entity.user.UserEntity;
+import com.instagram.numble_instagram.model.entity.feed.Post;
+import com.instagram.numble_instagram.model.entity.user.User;
 import com.instagram.numble_instagram.repository.feed.PostRepository;
 import com.instagram.numble_instagram.util.file.FileUtil;
 import com.instagram.numble_instagram.util.file.ImageFileStoreImpl;
@@ -26,8 +26,8 @@ public class PostWriteService {
     /**
      * 글 등록
      */
-    public PostResponse register(String content, String imageUrl, UserEntity regUser) {
-        PostEntity newPost = PostEntity.register(content, imageUrl, regUser);
+    public PostResponse register(String content, String imageUrl, User regUser) {
+        Post newPost = Post.register(content, imageUrl, regUser);
         newPost = postRepository.save(newPost);
         return PostResponse.convertResponse(newPost);
     }
@@ -35,8 +35,8 @@ public class PostWriteService {
     /**
      * 글 수정
      */
-    public PostResponse modify(UserEntity user, Long postId, String content, MultipartFile imageFile) {
-        PostEntity post = postRepository.findById(postId)
+    public PostResponse modify(User user, Long postId, String content, MultipartFile imageFile) {
+        Post post = postRepository.findById(postId)
                 .orElseThrow(PostNotFoundException::new);
         checkRegUser(user, post);
         post.changeContent(content);
@@ -47,8 +47,8 @@ public class PostWriteService {
     /**
      * 글 삭제
      */
-    public void delete(UserEntity user, Long postId) {
-        PostEntity post = postRepository.findById(postId)
+    public void delete(User user, Long postId) {
+        Post post = postRepository.findById(postId)
                 .orElseThrow(PostNotFoundException::new);
         checkRegUser(user, post);
         if (post.isImageUrl())
@@ -59,7 +59,7 @@ public class PostWriteService {
     /**
      * 등록자 체크
      */
-    private static void checkRegUser(UserEntity user, PostEntity post) {
+    private static void checkRegUser(User user, Post post) {
         if (!post.isRegUser(user))
             throw new NotPostRegUserException();
     }
@@ -67,7 +67,7 @@ public class PostWriteService {
     /**
      * 이미지 체크후 변경
      */
-    private void checkImageAndChange(MultipartFile imageFile, PostEntity post) {
+    private void checkImageAndChange(MultipartFile imageFile, Post post) {
         if (!FileUtil.existFile(imageFile))
             return;
 

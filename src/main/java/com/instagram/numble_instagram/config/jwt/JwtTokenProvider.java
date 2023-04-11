@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.instagram.numble_instagram.model.dto.jwt.Token;
-import com.instagram.numble_instagram.model.entity.jwt.RefreshTokenEntity;
+import com.instagram.numble_instagram.model.entity.jwt.RefreshToken;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
@@ -251,7 +251,7 @@ public class JwtTokenProvider {
 	 * Refresh Token 유효성 검증 후
 	 * 문제 없다면 새로운 Access Token 생성하여 리턴
 	 */
-	public String validateRefreshToken(RefreshTokenEntity refreshTokenEntity) {
+	public String validateRefreshToken(RefreshToken refreshTokenEntity) {
 		// refresh 객체에서 refreshToken 추출
 		String refreshToken = refreshTokenEntity.getRefreshToken();
 

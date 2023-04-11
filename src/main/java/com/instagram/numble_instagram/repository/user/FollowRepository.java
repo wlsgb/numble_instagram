@@ -2,18 +2,18 @@ package com.instagram.numble_instagram.repository.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.instagram.numble_instagram.model.entity.user.FollowEntity;
-import com.instagram.numble_instagram.model.entity.user.UserEntity;
+import com.instagram.numble_instagram.model.entity.user.Follow;
+import com.instagram.numble_instagram.model.entity.user.User;
 
-public interface FollowRepository extends JpaRepository<FollowEntity, Long> {
+public interface FollowRepository extends JpaRepository<Follow, Long> {
 
-	FollowEntity findByUserAndFollowUser(UserEntity user, UserEntity followUser);
+	Follow findByUserAndFollowUser(User user, User followUser);
 
-	FollowEntity findAllByUser(UserEntity user);
+	Follow findAllByUser(User user);
 
-	long countAllByUser(UserEntity user);
+	long countAllByUser(User user);
 
-	FollowEntity findAllByFollowUser(UserEntity followUser);
+	Follow findAllByFollowUser(User followUser);
 
-	long countAllByFollowUser(UserEntity followUser);
+	long countAllByFollowUser(User followUser);
 }

@@ -1,7 +1,7 @@
 package com.instagram.numble_instagram.model.dto.feed.response;
 
 import com.instagram.numble_instagram.model.dto.user.response.UserResponse;
-import com.instagram.numble_instagram.model.entity.feed.PostEntity;
+import com.instagram.numble_instagram.model.entity.feed.Post;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -22,7 +22,7 @@ public class PostResponse {
     private LocalDateTime updDate;
     private List<CommentResponse> commentList;
 
-    public static PostResponse convertResponse(PostEntity post) {
+    public static PostResponse convertResponse(Post post) {
         if (post == null)
             return new PostResponse();
 

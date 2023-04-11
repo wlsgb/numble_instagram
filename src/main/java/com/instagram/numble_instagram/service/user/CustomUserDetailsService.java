@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.instagram.numble_instagram.config.security.SecurityUser;
-import com.instagram.numble_instagram.model.entity.user.UserEntity;
+import com.instagram.numble_instagram.model.entity.user.User;
 import com.instagram.numble_instagram.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-		UserEntity user = userRepository.findById(Long.valueOf(userId))
+		User user = userRepository.findById(Long.valueOf(userId))
 			.orElseThrow(()-> new UsernameNotFoundException("회원 정보를 찾을 수 없습니다."));
 
 		return new SecurityUser(user);

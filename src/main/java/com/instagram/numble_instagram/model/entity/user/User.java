@@ -21,7 +21,7 @@ import java.util.Objects;
         @Index(name = "USER_INDEX1", columnList = "NICKNAME"),
 })
 @Comment("유저 테이블")
-public class UserEntity {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,7 +48,7 @@ public class UserEntity {
     private LocalDateTime updDate;
 
     @Builder
-    public UserEntity(String nickname, String profileImageUrl) {
+    public User(String nickname, String profileImageUrl) {
         this.nickname = nickname;
         this.profileImageUrl = profileImageUrl;
     }
@@ -57,7 +57,7 @@ public class UserEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserEntity user = (UserEntity) o;
+        User user = (User) o;
         return Objects.equals(userId, user.userId);
     }
 
@@ -69,8 +69,8 @@ public class UserEntity {
     /**
      * 회원가입
      */
-    public static UserEntity join(String nickname, String profileImageUrl) {
-        return UserEntity.builder()
+    public static User join(String nickname, String profileImageUrl) {
+        return User.builder()
                 .nickname(nickname)
                 .profileImageUrl(profileImageUrl)
                 .build();

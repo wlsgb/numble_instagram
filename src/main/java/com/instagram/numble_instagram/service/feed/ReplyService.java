@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 import com.instagram.numble_instagram.model.dto.feed.request.ReplyModifyRequest;
 import com.instagram.numble_instagram.model.dto.feed.request.ReplySaveRequest;
 import com.instagram.numble_instagram.model.dto.feed.response.ReplyResponse;
-import com.instagram.numble_instagram.model.entity.feed.CommentEntity;
-import com.instagram.numble_instagram.model.entity.feed.ReplyEntity;
-import com.instagram.numble_instagram.model.entity.user.UserEntity;
+import com.instagram.numble_instagram.model.entity.feed.Comment;
+import com.instagram.numble_instagram.model.entity.feed.Reply;
+import com.instagram.numble_instagram.model.entity.user.User;
 import com.instagram.numble_instagram.repository.feed.CommentRepository;
 import com.instagram.numble_instagram.repository.feed.ReplyRepository;
 import com.instagram.numble_instagram.repository.user.UserRepository;
@@ -28,12 +28,12 @@ public class ReplyService {
 	 */
 	public ReplyResponse saveReply(ReplySaveRequest dto) {
 		// 유저 정보 조회
-		UserEntity regUser = userRepository.getReferenceById(dto.getUserId());
+		User regUser = userRepository.getReferenceById(dto.getUserId());
 		// 글 정보 조회
-		CommentEntity comment = commentRepository.getReferenceById(dto.getCommentId());
+		Comment comment = commentRepository.getReferenceById(dto.getCommentId());
 		// 답글 저장
-		ReplyEntity newReply = replyRepository.save(
-			ReplyEntity.builder()
+		Reply newReply = replyRepository.save(
+			Reply.builder()
 				.regUser(regUser)
 				.comment(comment)
 				.content(dto.getContent())
@@ -47,10 +47,10 @@ public class ReplyService {
 	 */
 	public ReplyResponse modifyReply(ReplyModifyRequest dto) {
 		// 기존에 작성한 답글
-		ReplyEntity oldReply = replyRepository.getReferenceById(dto.getReplyId());
+		Reply oldReply = replyRepository.getReferenceById(dto.getReplyId());
 		// 답글 수정
-		ReplyEntity modifiedReply = replyRepository.save(
-			ReplyEntity.builder()
+		Reply modifiedReply = replyRepository.save(
+			Reply.builder()
 				.replyId(oldReply.getReplyId())
 				.content(dto.getContent())
 				.build()
@@ -63,7 +63,7 @@ public class ReplyService {
 	 */
 	public void deleteReply(Long replyId) {
 		// 기존에 작성한 답글
-		ReplyEntity oldReply = replyRepository.getReferenceById(replyId);
+		Reply oldReply = replyRepository.getReferenceById(replyId);
 		// 답글 삭제
 		replyRepository.delete(oldReply);
 	}

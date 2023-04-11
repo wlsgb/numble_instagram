@@ -2,7 +2,7 @@ package com.instagram.numble_instagram.service.user;
 
 import com.instagram.numble_instagram.exception.notFound.UserNotFoundException;
 import com.instagram.numble_instagram.model.dto.user.response.ProfileResponse;
-import com.instagram.numble_instagram.model.entity.user.UserEntity;
+import com.instagram.numble_instagram.model.entity.user.User;
 import com.instagram.numble_instagram.repository.user.FollowRepository;
 import com.instagram.numble_instagram.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class UserService {
      */
     public ProfileResponse getProfile(Long userId) {
         // 프로필 조회할 타겟 유저 정보
-        UserEntity targetUser = getUser(userId);
+        User targetUser = getUser(userId);
         // 프로필 정보
         return ProfileResponse.builder()
                 .nickname(targetUser.getNickname())
@@ -37,7 +37,7 @@ public class UserService {
     /**
      * 유저 ID로 회원 조회
      */
-    public UserEntity getUser(Long userId) {
+    public User getUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
     }
@@ -45,7 +45,7 @@ public class UserService {
     /**
      * 닉네임으로 회원 조회
      */
-    public UserEntity getUser(String nickname) {
+    public User getUser(String nickname) {
         return userRepository.findByNickname(nickname)
                 .orElseThrow(UserNotFoundException::new);
     }

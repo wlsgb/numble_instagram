@@ -35,7 +35,7 @@ import lombok.NoArgsConstructor;
 	@Index(name = "CHAT_ROOM_INDEX1", columnList = "DELETED"),
 })
 @Comment("채팅방 테이블")
-public class ChatRoomEntity {
+public class ChatRoom {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,5 +53,5 @@ public class ChatRoomEntity {
 	private boolean deleted = Boolean.FALSE;
 
 	@OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<MessageEntity> messageList;
+	private List<Message> messageList;
 }

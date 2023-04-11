@@ -1,6 +1,6 @@
 package com.instagram.numble_instagram.model.entity.feed;
 
-import com.instagram.numble_instagram.model.entity.user.UserEntity;
+import com.instagram.numble_instagram.model.entity.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 import jakarta.persistence.*;
@@ -21,43 +21,43 @@ import java.util.List;
 @DynamicUpdate
 @Entity
 @Table(name = "POST")
-@Comment("글 테이블")
-public class PostEntity {
+@org.hibernate.annotations.Comment("글 테이블")
+public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "POST_ID")
-    @Comment("글 ID")
+    @org.hibernate.annotations.Comment("글 ID")
     private Long postId;
 
     @Column(name = "CONTENT", columnDefinition = "NVARCHAR(2000)")
-    @Comment("글 내용")
+    @org.hibernate.annotations.Comment("글 내용")
     private String content;
 
     @Column(name = "IMAGE_URL")
-    @Comment("이미지 URL")
+    @org.hibernate.annotations.Comment("이미지 URL")
     private String imageUrl;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "USER_ID")
-    @Comment("글 등록한 유저 ID")
-    private UserEntity regUser;
+    @org.hibernate.annotations.Comment("글 등록한 유저 ID")
+    private User regUser;
 
     @CreationTimestamp
     @Column(name = "REG_DATE", updatable = false, nullable = false)
-    @Comment("등록 날짜")
+    @org.hibernate.annotations.Comment("등록 날짜")
     private LocalDateTime regDate;
 
     @UpdateTimestamp
     @Column(name = "UPD_DATE", nullable = false)
-    @Comment("수정 날짜")
+    @org.hibernate.annotations.Comment("수정 날짜")
     private LocalDateTime updDate;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CommentEntity> commentList = new ArrayList<>();
+    private List<Comment> commentList = new ArrayList<>();
 
     @Builder
-    public PostEntity(String content, String imageUrl, UserEntity regUser) {
+    public Post(String content, String imageUrl, User regUser) {
         this.content = content;
         this.imageUrl = imageUrl;
         this.regUser = regUser;
@@ -66,8 +66,8 @@ public class PostEntity {
     /**
      * 글 등록
      */
-    public static PostEntity register(String content, String imageUrl, UserEntity regUser) {
-        return PostEntity.builder()
+    public static Post register(String content, String imageUrl, User regUser) {
+        return Post.builder()
                 .content(content)
                 .imageUrl(imageUrl)
                 .regUser(regUser)
@@ -95,7 +95,7 @@ public class PostEntity {
     /**
      * 댓글 추가
      */
-    public void addComment(CommentEntity newComment) {
+    public void addComment(Comment newComment) {
         this.commentList.add(newComment);
     }
 
@@ -109,7 +109,7 @@ public class PostEntity {
     /**
      * 작성자 여부 확인
      */
-    public boolean isRegUser(UserEntity user) {
+    public boolean isRegUser(User user) {
         return this.regUser.equals(user);
     }
 

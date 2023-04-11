@@ -1,6 +1,6 @@
 package com.instagram.numble_instagram.usecase.post;
 
-import com.instagram.numble_instagram.model.entity.user.UserEntity;
+import com.instagram.numble_instagram.model.entity.user.User;
 import com.instagram.numble_instagram.service.feed.PostWriteService;
 import com.instagram.numble_instagram.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ public class DeletePostUseCase {
     private final PostWriteService postWriteService;
 
     public void execute(Long userId, Long postId) {
-        UserEntity regUser = userService.getUser(userId);
+        User regUser = userService.getUser(userId);
         postWriteService.delete(regUser, postId);
     }
 }

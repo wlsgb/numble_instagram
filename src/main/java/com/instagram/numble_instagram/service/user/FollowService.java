@@ -3,8 +3,8 @@ package com.instagram.numble_instagram.service.user;
 import org.springframework.stereotype.Service;
 
 import com.instagram.numble_instagram.model.dto.user.request.FollowRequest;
-import com.instagram.numble_instagram.model.entity.user.FollowEntity;
-import com.instagram.numble_instagram.model.entity.user.UserEntity;
+import com.instagram.numble_instagram.model.entity.user.Follow;
+import com.instagram.numble_instagram.model.entity.user.User;
 import com.instagram.numble_instagram.repository.user.FollowRepository;
 import com.instagram.numble_instagram.repository.user.UserRepository;
 
@@ -24,14 +24,14 @@ public class FollowService {
 	 */
 	public void followUser(FollowRequest dto) {
 		// 본인 정보
-		UserEntity user = userRepository.findById(dto.getUserId())
+		User user = userRepository.findById(dto.getUserId())
 			.orElseThrow(() -> new IllegalArgumentException("회원 정보가 존재하지 않습니다."));
 		// 팔로우할 대상자 정보
-		UserEntity followUser = userRepository.findById(dto.getUserId())
+		User followUser = userRepository.findById(dto.getUserId())
 			.orElseThrow(() -> new IllegalArgumentException("팔로우할 대상 회원 정보가 존재하지 않습니다."));
 		// 팔로우 요청
 		followRepository.save(
-			FollowEntity.builder()
+			Follow.builder()
 				.user(user)
 				.followUser(followUser)
 				.build()
@@ -43,13 +43,13 @@ public class FollowService {
 	 */
 	public void followUserCancel(FollowRequest dto) {
 		// 본인 정보
-		UserEntity user = userRepository.findById(dto.getUserId())
+		User user = userRepository.findById(dto.getUserId())
 			.orElseThrow(() -> new IllegalArgumentException("회원 정보가 존재하지 않습니다."));
 		// 팔로우할 대상자 정보
-		UserEntity followUser = userRepository.findById(dto.getUserId())
+		User followUser = userRepository.findById(dto.getUserId())
 			.orElseThrow(() -> new IllegalArgumentException("팔로우할 대상 회원 정보가 존재하지 않습니다."));
 		// 기존 팔로우 정보
-		FollowEntity olfFollow = followRepository.findByUserAndFollowUser(user, followUser);
+		Follow olfFollow = followRepository.findByUserAndFollowUser(user, followUser);
 		// 팔로우 취소 (삭제)
 		followRepository.delete(olfFollow);
 

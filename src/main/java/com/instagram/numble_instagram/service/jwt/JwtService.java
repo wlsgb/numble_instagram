@@ -10,7 +10,7 @@ import org.springframework.util.StringUtils;
 
 import com.instagram.numble_instagram.config.jwt.JwtTokenProvider;
 import com.instagram.numble_instagram.model.dto.jwt.Token;
-import com.instagram.numble_instagram.model.entity.jwt.RefreshTokenEntity;
+import com.instagram.numble_instagram.model.entity.jwt.RefreshToken;
 import com.instagram.numble_instagram.repository.jwt.RefreshTokenRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class JwtService {
 	@Transactional
 	public void signIn(Token token) {
 		// 저장할 refresh 토큰 생성
-		RefreshTokenEntity refreshToken = RefreshTokenEntity.builder()
+		RefreshToken refreshToken = RefreshToken.builder()
 			.keyUserId(token.getKey())
 			.refreshToken(token.getRefreshToken())
 			.build();
@@ -53,7 +53,7 @@ public class JwtService {
 	/**
 	 * refresh 토큰 객체 조회
 	 */
-	public Optional<RefreshTokenEntity> getRefreshToken(String refreshToken) {
+	public Optional<RefreshToken> getRefreshToken(String refreshToken) {
 		return refreshTokenRepository.findByRefreshToken(refreshToken);
 	}
 
@@ -61,7 +61,7 @@ public class JwtService {
 	 * refresh 토큰 검증
 	 */
 	public Map<String, String> validateRefreshToken(String refreshToken) {
-		RefreshTokenEntity refreshTokenEntity = getRefreshToken(refreshToken)
+		RefreshToken refreshTokenEntity = getRefreshToken(refreshToken)
 			.orElseThrow(IllegalArgumentException::new);
 
 		String createAccessToken = jwtTokenProvider.validateRefreshToken(refreshTokenEntity);

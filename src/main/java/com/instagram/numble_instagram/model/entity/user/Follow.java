@@ -37,10 +37,10 @@ import lombok.NoArgsConstructor;
 	@Index(name = "FOLLOW_INDEX1", columnList = "DELETED"),
 })
 @Comment("팔로우 정보 테이블")
-public class FollowEntity {
+public class Follow {
 
 	@Builder
-	public FollowEntity(Long followId, UserEntity user, UserEntity followUser) {
+	public Follow(Long followId, User user, User followUser) {
 		this.followId = followId;
 		this.user = user;
 		this.followUser = followUser;
@@ -55,12 +55,12 @@ public class FollowEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "USER_ID")
 	@Comment("본인 유저 ID")
-	private UserEntity user;
+	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "FOLLOW_USER_ID", referencedColumnName = "USER_ID")
 	@Comment("팔로우한 유저 ID")
-	private UserEntity followUser;
+	private User followUser;
 
 	@CreationTimestamp
 	@Column(name = "REG_DATE", nullable = false)

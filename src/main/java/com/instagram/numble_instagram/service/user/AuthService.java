@@ -5,7 +5,7 @@ import com.instagram.numble_instagram.model.dto.user.request.LoginRequest;
 import com.instagram.numble_instagram.model.dto.user.request.UserJoinRequest;
 import com.instagram.numble_instagram.model.dto.user.request.UserModifyRequest;
 import com.instagram.numble_instagram.model.dto.user.response.UserResponse;
-import com.instagram.numble_instagram.model.entity.user.UserEntity;
+import com.instagram.numble_instagram.model.entity.user.User;
 import com.instagram.numble_instagram.repository.user.UserRepository;
 import com.instagram.numble_instagram.util.file.ImageFileStoreImpl;
 import jakarta.transaction.Transactional;
@@ -31,7 +31,7 @@ public class AuthService {
     public UserResponse join(UserJoinRequest userJoinRequest) {
         validateDuplicateNickname(userJoinRequest.getNickname());
         String profileImageUrl = imageFileStore.uploadFile(userJoinRequest.getProfileImage());
-        UserEntity newUser = UserEntity.join(userJoinRequest.getNickname(), profileImageUrl);
+        User newUser = User.join(userJoinRequest.getNickname(), profileImageUrl);
         // 회원 저장
         userRepository.save(newUser);
         return UserResponse.convertResponse(newUser);
@@ -41,7 +41,7 @@ public class AuthService {
      * 로그인
      */
     public UserResponse login(LoginRequest dto) {
-        UserEntity loginUser = userRepository.findByNickname(dto.getNickname())
+        User loginUser = userRepository.findByNickname(dto.getNickname())
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
         return UserResponse.convertResponse(loginUser);
     }
@@ -51,7 +51,7 @@ public class AuthService {
      */
     public UserResponse modify(UserModifyRequest dto) {
         // 기존 회원 정보
-        UserEntity user = userRepository.findById(dto.getUserId())
+        User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(UserNotFoundException::new);
         checkNicknameAndChange(dto.getNickname(), user);
         checkImageFileAndChange(dto.getProfileImage(), user);
@@ -62,7 +62,7 @@ public class AuthService {
      * 계정 삭제 처리
      */
     public void delete(Long userId) {
-        UserEntity user = userRepository.getReferenceById(userId);
+        User user = userRepository.getReferenceById(userId);
         imageFileStore.deleteFile(user.getProfileImageUrl());
         userRepository.deleteById(userId);
     }
@@ -70,7 +70,7 @@ public class AuthService {
     /**
      * 닉네임 체크 후 변경
      */
-    private void checkNicknameAndChange(String nickname, UserEntity user) {
+    private void checkNicknameAndChange(String nickname, User user) {
         if (StringUtils.hasText(nickname) && !user.getNickname().equals(nickname))
             validateDuplicateNickname(nickname);
         if (StringUtils.hasText(nickname))
@@ -80,7 +80,7 @@ public class AuthService {
     /**
      * 이미지 체크후 변경
      */
-    private void checkImageFileAndChange(MultipartFile newProfileImageFile, UserEntity user) {
+    private void checkImageFileAndChange(MultipartFile newProfileImageFile, User user) {
         // 기존 프로필 이미지가 없는 경우
         if (!StringUtils.hasText(user.getProfileImageUrl())) {
             String newProfileImageUrl = imageFileStore.uploadFile(newProfileImageFile);

@@ -10,7 +10,7 @@ import org.hibernate.annotations.ResultCheckStyle;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import com.instagram.numble_instagram.model.entity.user.UserEntity;
+import com.instagram.numble_instagram.model.entity.user.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,7 +37,7 @@ import lombok.NoArgsConstructor;
 	@Index(name = "MESSAGE_INDEX1", columnList = "DELETED"),
 })
 @Comment("메세지 테이블")
-public class MessageEntity {
+public class Message {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "MSG_ID")
@@ -51,12 +51,12 @@ public class MessageEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CHAT_ROOM_ID")
 	@Comment("메세지 보낸 채팅방 ID")
-	private ChatRoomEntity chatRoom;
+	private ChatRoom chatRoom;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "USER_ID")
 	@Comment("메세지 보낸 유저 ID")
-	private UserEntity sendUser;
+	private User sendUser;
 
 	@CreationTimestamp
 	@Column(name = "REG_DATE", nullable = false)
