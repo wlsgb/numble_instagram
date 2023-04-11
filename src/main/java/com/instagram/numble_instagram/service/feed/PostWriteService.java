@@ -1,8 +1,7 @@
 package com.instagram.numble_instagram.service.feed;
 
-import com.instagram.numble_instagram.exception.invalidRequest.NotPostRegUserException;
+import com.instagram.numble_instagram.exception.invalidRequest.NotRegUserException;
 import com.instagram.numble_instagram.exception.notFound.PostNotFoundException;
-import com.instagram.numble_instagram.model.dto.feed.response.PostResponse;
 import com.instagram.numble_instagram.model.entity.feed.Post;
 import com.instagram.numble_instagram.model.entity.user.User;
 import com.instagram.numble_instagram.repository.feed.PostRepository;
@@ -26,22 +25,21 @@ public class PostWriteService {
     /**
      * 글 등록
      */
-    public PostResponse register(String content, String imageUrl, User regUser) {
+    public Post register(String content, String imageUrl, User regUser) {
         Post newPost = Post.register(content, imageUrl, regUser);
-        newPost = postRepository.save(newPost);
-        return PostResponse.convertResponse(newPost);
+        return postRepository.save(newPost);
     }
 
     /**
      * 글 수정
      */
-    public PostResponse modify(User user, Long postId, String content, MultipartFile imageFile) {
+    public Post modify(User user, Long postId, String content, MultipartFile imageFile) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(PostNotFoundException::new);
         checkRegUser(user, post);
         post.changeContent(content);
         checkImageAndChange(imageFile, post);
-        return PostResponse.convertResponse(post);
+        return post;
     }
 
     /**
@@ -61,7 +59,7 @@ public class PostWriteService {
      */
     private static void checkRegUser(User user, Post post) {
         if (!post.isRegUser(user))
-            throw new NotPostRegUserException();
+            throw new NotRegUserException();
     }
 
     /**

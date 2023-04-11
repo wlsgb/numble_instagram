@@ -3,6 +3,7 @@ package com.instagram.numble_instagram.service.feed;
 import com.instagram.numble_instagram.model.dto.CursorResult;
 import com.instagram.numble_instagram.model.dto.feed.response.PostResponse;
 import com.instagram.numble_instagram.model.entity.feed.Post;
+import com.instagram.numble_instagram.model.entity.user.User;
 import com.instagram.numble_instagram.repository.feed.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,15 +17,15 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
-public class FeedService {
+public class FeedReadService {
     private final PostRepository postRepository;
 
     /**
      * 글 목록 조회
      */
-    public CursorResult<PostResponse> getPostList(Long cursorId, Pageable page) {
+    public CursorResult<PostResponse> getFeedList(User user, Long cursorId, Pageable page) {
         // 글 목록 조회
-        final List<Post> postList = getPagingPostList(cursorId, page);
+        final List<Post> postList = getPagingPostList(user, cursorId, page);
         // 마지막 글 아이디
         final Long lastPostIdOfList = postList.isEmpty() ?
                 null : postList.get(postList.size() - 1).getPostId();
@@ -33,25 +34,25 @@ public class FeedService {
                 .list(postList.stream()
                         .map(PostResponse::convertResponse)
                         .toList())
-                .hasNext(hasNext(lastPostIdOfList))
+                .hasNext(hasNext(user, lastPostIdOfList))
                 .build();
     }
 
     /**
      * 페이징 된 글 목록 조회
      */
-    private List<Post> getPagingPostList(Long postId, Pageable page) {
+    private List<Post> getPagingPostList(User regUser, Long postId, Pageable page) {
         return postId == null ?
-                postRepository.findAllByOrderByPostIdDesc(page) :
-                postRepository.findByPostIdLessThanOrderByPostIdDesc(postId, page);
+                postRepository.findAllByRegUserOrderByPostIdDesc(regUser, page) :
+                postRepository.findByRegUserAndPostIdLessThanOrderByPostIdDesc(regUser, postId, page);
     }
 
     /**
      * 다음 글이 존재하는지 여부
      */
-    private Boolean hasNext(Long postId) {
+    private Boolean hasNext(User regUser, Long postId) {
         if (postId == null)
             return false;
-        return postRepository.existsByPostIdLessThan(postId);
+        return postRepository.existsByRegUserAndPostIdLessThan(regUser, postId);
     }
 }

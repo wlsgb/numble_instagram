@@ -1,17 +1,7 @@
 package com.instagram.numble_instagram.model.dto.feed.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@Builder
-public class ReplyModifyRequest {
-	private Long replyId;
-	private String content;
+public record ReplyModifyRequest(@NotNull Long replyId, @NotBlank String content) {
 }

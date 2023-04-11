@@ -1,62 +1,60 @@
 package com.instagram.numble_instagram.controller.feed;
 
+import com.instagram.numble_instagram.config.security.SecurityUser;
+import com.instagram.numble_instagram.model.dto.feed.request.ReplyModifyRequest;
+import com.instagram.numble_instagram.model.dto.feed.request.ReplyRegisterRequest;
+import com.instagram.numble_instagram.model.dto.feed.response.ReplyResponse;
+import com.instagram.numble_instagram.usecase.post.CreateReplyUseCase;
+import com.instagram.numble_instagram.usecase.post.DeleteReplyUseCase;
+import com.instagram.numble_instagram.usecase.post.UpdateReplyUseCase;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.instagram.numble_instagram.config.security.SecurityUser;
-import com.instagram.numble_instagram.model.dto.feed.request.ReplyModifyRequest;
-import com.instagram.numble_instagram.model.dto.feed.request.ReplySaveRequest;
-import com.instagram.numble_instagram.model.dto.feed.response.ReplyResponse;
-import com.instagram.numble_instagram.service.feed.ReplyService;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/feed/reply")
+@RequestMapping(value = "/api/feed/reply")
 public class ReplyController {
 
-	private final ReplyService replyService;
+	private final CreateReplyUseCase createReplyUseCase;
+	private final UpdateReplyUseCase updateReplyUseCase;
+	private final DeleteReplyUseCase deleteReplyUseCase;
 
 	/**
 	 * 답글 생성
 	 */
-	@PostMapping()
+	@PostMapping(value = "")
 	public ResponseEntity<ReplyResponse> saveReply(
-		@RequestBody ReplySaveRequest dto,
+		@RequestBody ReplyRegisterRequest replyRegisterRequest,
 		@AuthenticationPrincipal SecurityUser user
 	) {
-		dto.setUserId(user.getUser().getUserId());
-		return ResponseEntity.ok(replyService.saveReply(dto));
+		return ResponseEntity.ok(createReplyUseCase.execute(user.getUser().getUserId(), replyRegisterRequest));
 	}
 
 	/**
 	 * 답글 수정
 	 */
-	@PutMapping()
+	@PutMapping(value = "")
 	public ResponseEntity<ReplyResponse> modifyReply(
-		@RequestBody ReplyModifyRequest dto
+		@RequestBody ReplyModifyRequest replyModifyRequest,
+		@AuthenticationPrincipal SecurityUser user
 	) {
-		return ResponseEntity.ok(replyService.modifyReply(dto));
+		return ResponseEntity.ok(updateReplyUseCase.execute(user.getUser().getUserId(), replyModifyRequest));
 	}
 
 	/**
 	 * 답글 삭제
 	 */
-	@DeleteMapping()
+	@DeleteMapping(value = "/{replyId}")
 	public ResponseEntity<HttpStatus> deleteReply(
-		@RequestBody Long replyId
+		@PathVariable Long replyId,
+		@AuthenticationPrincipal SecurityUser user
 	) {
-		replyService.deleteReply(replyId);
+		deleteReplyUseCase.execute(user.getUser().getUserId(), replyId);
 		return ResponseEntity.ok().build();
 	}
 

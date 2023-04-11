@@ -1,14 +1,15 @@
 package com.instagram.numble_instagram.model.entity.feed;
 
 import com.instagram.numble_instagram.model.entity.user.User;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Table;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -38,7 +39,7 @@ public class Post {
     @org.hibernate.annotations.Comment("이미지 URL")
     private String imageUrl;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
     @org.hibernate.annotations.Comment("글 등록한 유저 ID")
     private User regUser;
@@ -53,7 +54,7 @@ public class Post {
     @org.hibernate.annotations.Comment("수정 날짜")
     private LocalDateTime updDate;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>();
 
     @Builder
@@ -107,7 +108,7 @@ public class Post {
     }
 
     /**
-     * 작성자 여부 확인
+     * 등록자 여부 확인
      */
     public boolean isRegUser(User user) {
         return this.regUser.equals(user);

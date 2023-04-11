@@ -1,17 +1,19 @@
 package com.instagram.numble_instagram.repository.feed;
 
-import java.util.List;
-
+import com.instagram.numble_instagram.model.entity.feed.Post;
+import com.instagram.numble_instagram.model.entity.user.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.instagram.numble_instagram.model.entity.feed.Post;
+import java.util.List;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-	List<Post> findAllByOrderByPostIdDesc(Pageable pageable);
-	List<Post> findByPostIdLessThanOrderByPostIdDesc(Long postId, Pageable pageable);
-	Boolean existsByPostIdLessThan(Long postId);
+    List<Post> findAllByRegUserOrderByPostIdDesc(User regUser, Pageable pageable);
+
+    List<Post> findByRegUserAndPostIdLessThanOrderByPostIdDesc(User regUser, Long postId, Pageable pageable);
+
+    Boolean existsByRegUserAndPostIdLessThan(User regUser, Long postId);
 }

@@ -2,6 +2,7 @@ package com.instagram.numble_instagram.usecase.post;
 
 import com.instagram.numble_instagram.model.dto.feed.request.PostRegisterRequest;
 import com.instagram.numble_instagram.model.dto.feed.response.PostResponse;
+import com.instagram.numble_instagram.model.entity.feed.Post;
 import com.instagram.numble_instagram.model.entity.user.User;
 import com.instagram.numble_instagram.service.feed.PostWriteService;
 import com.instagram.numble_instagram.service.user.UserService;
@@ -18,9 +19,10 @@ public class CreatePostUseCase {
     private final PostWriteService postWriteService;
     private final FileStore imageFileStore;
 
-    public PostResponse execute(Long regUserId, PostRegisterRequest postRegisterRequest) {
-        User regUser = userService.getUser(regUserId);
+    public PostResponse execute(Long userId, PostRegisterRequest postRegisterRequest) {
+        User user = userService.getUser(userId);
         String postImageUrl = imageFileStore.uploadFile(postRegisterRequest.postImageFile());
-        return postWriteService.register(postRegisterRequest.content(), postImageUrl, regUser);
+        Post newPost =  postWriteService.register(postRegisterRequest.content(), postImageUrl, user);
+        return PostResponse.convertResponse(newPost);
     }
 }

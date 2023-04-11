@@ -30,7 +30,7 @@ public class PostController {
      * 글 생성
      */
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<PostResponse> savePost(
+    public ResponseEntity<PostResponse> createPost(
             @Valid PostRegisterRequest dto,
             @AuthenticationPrincipal SecurityUser user
     ) {
@@ -41,7 +41,7 @@ public class PostController {
      * 글 수정
      */
     @PutMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<PostResponse> modifyPost(
+    public ResponseEntity<PostResponse> updatePost(
             @Valid PostModifyRequest dto,
             @AuthenticationPrincipal SecurityUser user
     ) {
