@@ -1,19 +1,33 @@
 package com.instagram.numble_instagram.model.entity.message;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.instagram.numble_instagram.model.entity.user.User;
-import jakarta.persistence.*;
+
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.*;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -38,6 +52,10 @@ public class ChatRoom {
 	@Column(name = "LAST_MESSAGE")
 	@Comment("마지막으로 보낸 메세지")
 	private String lastMessage;
+
+	@Column(name = "GROUP_CHAT")
+	@Comment("그룹 채팅방 여부")
+	private boolean groupChat = Boolean.FALSE;
 
 	@CreationTimestamp
 	@Column(name = "REG_DATE", updatable = false, nullable = false)
@@ -84,5 +102,12 @@ public class ChatRoom {
 	 */
 	public void changeLastMessage(String lastMessage) {
 		this.lastMessage = lastMessage;
+	}
+
+	/**
+	 * 그룹 채팅방 여부 변경
+	 */
+	public void changeGroupChat(boolean isGroupChat) {
+		this.groupChat = isGroupChat;
 	}
 }
