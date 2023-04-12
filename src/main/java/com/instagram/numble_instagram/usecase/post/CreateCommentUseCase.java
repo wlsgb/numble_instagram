@@ -11,6 +11,7 @@ import com.instagram.numble_instagram.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class CreateCommentUseCase {
     private final PostReadService postReadService;
     private final CommentWriteService commentWriteService;
 
+    @Transactional
     public CommentResponse execute(Long userId, CommentRegisterRequest commentRegisterRequest) {
         User user = userService.getUser(userId);
         Post post = postReadService.getPost(commentRegisterRequest.postId());

@@ -9,6 +9,7 @@ import com.instagram.numble_instagram.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ public class UpdatePostUseCase {
     private final UserService userService;
     private final PostWriteService postWriteService;
 
+    @Transactional
     public PostResponse execute(Long userId, PostModifyRequest postModifyRequest) {
         User user = userService.getUser(userId);
         Post modifiedPost = postWriteService.modify(user, postModifyRequest.postId(), postModifyRequest.content(), postModifyRequest.postImageFile());

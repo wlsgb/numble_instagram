@@ -10,6 +10,7 @@ import com.instagram.numble_instagram.util.file.FileStore;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ public class CreatePostUseCase {
     private final PostWriteService postWriteService;
     private final FileStore imageFileStore;
 
+    @Transactional
     public PostResponse execute(Long userId, PostRegisterRequest postRegisterRequest) {
         User user = userService.getUser(userId);
         String postImageUrl = imageFileStore.uploadFile(postRegisterRequest.postImageFile());

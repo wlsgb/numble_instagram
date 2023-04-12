@@ -7,6 +7,7 @@ import com.instagram.numble_instagram.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -15,6 +16,7 @@ public class DeleteFollowUseCase {
     private final UserService userService;
     private final FollowWriteService followWriteService;
 
+    @Transactional
     public void execute(Long fromUserId, FollowRequest followRequest) {
         User fromUser = userService.getUser(fromUserId);
         User toUser = userService.getUser(followRequest.toUserId());
