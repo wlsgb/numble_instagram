@@ -21,6 +21,20 @@ public class UserChatRoomMappedReadService {
     private final UserChatRoomMappedRepository chatRoomUserRepository;
 
     /**
+     * 유저 정보로 매핑 조회
+     */
+    public List<UserChatRoomMapped> getUserChatRoomMappedList(User user) {
+        return chatRoomUserRepository.findAllByChatUser(user);
+    }
+
+    /**
+     * 채팅방 정보로 매핑 조회
+     */
+    public List<UserChatRoomMapped> getUserChatRoomMappedList(ChatRoom chatRoom) {
+        return chatRoomUserRepository.findAllByChatRoom(chatRoom);
+    }
+
+    /**
      * 채팅방 조회
      */
     public List<ChatRoom> getChatRoomList(User user) {
