@@ -13,6 +13,7 @@ import org.hibernate.annotations.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -54,6 +55,19 @@ public class ChatRoom {
 	@Builder
 	public ChatRoom(User createChatRoomUser) {
 		this.createChatRoomUser = createChatRoomUser;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		ChatRoom chatRoom = (ChatRoom) o;
+		return Objects.equals(chatRoomId, chatRoom.chatRoomId);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(chatRoomId);
 	}
 
 	/**
