@@ -1,39 +1,25 @@
 package com.instagram.numble_instagram.model.entity.message;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import org.hibernate.annotations.Comment;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.ResultCheckStyle;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
-
+import com.instagram.numble_instagram.model.entity.user.User;
+import jakarta.persistence.*;
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.*;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @DynamicInsert
 @DynamicUpdate
-@SQLDelete(sql = "UPDATE CHAT_ROOM SET DELETED = TRUE WHERE MSG_ID = ?", check = ResultCheckStyle.COUNT)
-@Where(clause = "DELETED = FALSE")
 @Entity
-@Table(name = "CHAT_ROOM", indexes = {
-	@Index(name = "CHAT_ROOM_INDEX1", columnList = "DELETED"),
-})
+@Table(name = "CHAT_ROOM")
 @Comment("채팅방 테이블")
 public class ChatRoom {
 
@@ -43,15 +29,46 @@ public class ChatRoom {
 	@Comment("채팅방 ID")
 	private Long chatRoomId;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "CREATE_CHAT_ROOM_USER_ID")
+	@Comment("챗 유저 ID")
+	private User createChatRoomUser;
+
+	@Column(name = "LAST_MESSAGE")
+	@Comment("마지막으로 보낸 메세지")
+	private String lastMessage;
+
 	@CreationTimestamp
-	@Column(name = "REG_DATE", nullable = false)
+	@Column(name = "REG_DATE", updatable = false, nullable = false)
 	@Comment("등록 날짜")
 	private LocalDateTime regDate;
 
-	@Column(name = "DELETED", nullable = false)
-	@Comment("삭제 여부")
-	private boolean deleted = Boolean.FALSE;
+	@UpdateTimestamp
+	@Column(name = "UPD_DATE", nullable = false)
+	@Comment("등록 날짜")
+	private LocalDateTime updDate;
 
-	@OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Message> messageList;
+	@OneToMany(mappedBy = "chatRoom", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Message> messageList = new ArrayList<>();
+
+	@Builder
+	public ChatRoom(User createChatRoomUser) {
+		this.createChatRoomUser = createChatRoomUser;
+	}
+
+	/**
+	 * 채팅방 등록
+	 */
+	public static ChatRoom register(User createChatRoomUser) {
+		return ChatRoom.builder()
+				.createChatRoomUser(createChatRoomUser)
+				.build();
+	}
+
+	/**
+	 * 마지막 전송 메세지 변경
+	 */
+	public void changeLastMessage(String lastMessage) {
+		this.lastMessage = lastMessage;
+	}
 }

@@ -1,41 +1,22 @@
 package com.instagram.numble_instagram.model.entity.message;
 
-import java.time.LocalDateTime;
-
-import org.hibernate.annotations.Comment;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.ResultCheckStyle;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
-
 import com.instagram.numble_instagram.model.entity.user.User;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.*;
+
+import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @DynamicInsert
 @DynamicUpdate
-@SQLDelete(sql = "UPDATE MESSAGE SET DELETED = TRUE WHERE MSG_ID = ?", check = ResultCheckStyle.COUNT)
-@Where(clause = "DELETED = FALSE")
 @Entity
-@Table(name = "MESSAGE", indexes = {
-	@Index(name = "MESSAGE_INDEX1", columnList = "DELETED"),
-})
+@Table(name = "MESSAGE")
 @Comment("메세지 테이블")
 public class Message {
 	@Id
@@ -44,7 +25,7 @@ public class Message {
 	@Comment("메세지 ID")
 	private Long msgId;
 
-	@Column(name = "CONTENT", columnDefinition = "NVARCHAR(1000)")
+	@Column(name = "CONTENT", length = 500)
 	@Comment("메세지 내용")
 	private String content;
 
@@ -54,16 +35,35 @@ public class Message {
 	private ChatRoom chatRoom;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "USER_ID")
+	@JoinColumn(name = "SEND_USER_ID")
 	@Comment("메세지 보낸 유저 ID")
 	private User sendUser;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "RECEIVE_USER_ID")
+	@Comment("메세지 받은 유저 ID")
+	private User receiveUser;
 
 	@CreationTimestamp
 	@Column(name = "REG_DATE", nullable = false)
 	@Comment("등록 날짜")
 	private LocalDateTime regDate;
 
-	@Column(name = "DELETED", nullable = false)
-	@Comment("삭제 여부")
-	private boolean deleted = Boolean.FALSE;
+	@Builder
+	public Message(String content, ChatRoom chatRoom, User sendUser) {
+		this.content = content;
+		this.chatRoom = chatRoom;
+		this.sendUser = sendUser;
+	}
+
+	/**
+	 * 메세지 전송
+	 */
+	public static Message sendMessage(String content, ChatRoom chatRoom, User sendUser) {
+		return Message.builder()
+				.content(content)
+				.chatRoom(chatRoom)
+				.sendUser(sendUser)
+				.build();
+	}
 }
