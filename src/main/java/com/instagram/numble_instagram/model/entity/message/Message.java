@@ -39,11 +39,6 @@ public class Message {
 	@Comment("메세지 보낸 유저 ID")
 	private User sendUser;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "RECEIVE_USER_ID")
-	@Comment("메세지 받은 유저 ID")
-	private User receiveUser;
-
 	@CreationTimestamp
 	@Column(name = "REG_DATE", nullable = false)
 	@Comment("등록 날짜")

@@ -1,19 +1,19 @@
 package com.instagram.numble_instagram.service.message;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import com.instagram.numble_instagram.exception.notFound.UserChatRoomMappedNotFoundException;
 import com.instagram.numble_instagram.model.entity.message.ChatRoom;
 import com.instagram.numble_instagram.model.entity.message.UserChatRoomMapped;
 import com.instagram.numble_instagram.model.entity.user.User;
 import com.instagram.numble_instagram.repository.message.UserChatRoomMappedRepository;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -49,9 +49,9 @@ public class UserChatRoomMappedReadService {
     public List<ChatRoom> getChatRoomList(User user) {
         List<UserChatRoomMapped> chatRoomUserList = getUserChatRoomMappedList(user);
         return new ArrayList<>(
-            chatRoomUserList.stream()
-                .collect(Collectors.groupingBy(UserChatRoomMapped::getChatRoom))
-                .keySet()
+                chatRoomUserList.stream()
+                        .collect(Collectors.groupingBy(UserChatRoomMapped::getChatRoom))
+                        .keySet()
         );
     }
 
@@ -61,20 +61,27 @@ public class UserChatRoomMappedReadService {
     public List<ChatRoom> getChatRoomList(User fromUser, User toUser) {
         List<UserChatRoomMapped> chatRoomUserList = getUserChatRoomMappedList(fromUser, toUser);
         return new ArrayList<>(
-            chatRoomUserList.stream()
-                .collect(Collectors.groupingBy(UserChatRoomMapped::getChatRoom))
-                .keySet()
+                chatRoomUserList.stream()
+                        .collect(Collectors.groupingBy(UserChatRoomMapped::getChatRoom))
+                        .keySet()
         );
     }
 
     /**
      * 1:1 채팅방 조회
      */
-    public List<ChatRoom> getSingleChatRoomList(User fromUser, User toUser) {
-        return getChatRoomList(fromUser, toUser)
-            .stream()
-            .filter(chatRoom -> !chatRoom.isGroupChat())
-            .toList();
+    public ChatRoom getSingleChatRoom(User fromUser, User toUser) {
+        return chatRoomUserRepository.findChatRoom(fromUser, toUser, PageRequest.of(0, 1))
+                .stream().findFirst()
+                .orElseThrow(UserChatRoomMappedNotFoundException::new)
+                .getChatRoom();
+    }
+
+    /**
+     * 1:1 채팅방 여부 조회
+     */
+    public boolean existSingleChatRoom(User fromUser, User toUser) {
+        return chatRoomUserRepository.existsChatRoom(fromUser, toUser);
     }
 
     /**
@@ -82,9 +89,9 @@ public class UserChatRoomMappedReadService {
      */
     public List<ChatRoom> getGroupChatRoomList(User user) {
         return getChatRoomList(user)
-            .stream()
-            .filter(ChatRoom::isGroupChat)
-            .toList();
+                .stream()
+                .filter(ChatRoom::isGroupChat)
+                .toList();
     }
 
     /**
@@ -93,9 +100,9 @@ public class UserChatRoomMappedReadService {
     public List<User> getChatRoomInUserList(ChatRoom chatRoom) {
         List<UserChatRoomMapped> chatRoomUserList = getUserChatRoomMappedList(chatRoom);
         return new ArrayList<>(
-            chatRoomUserList.stream()
-                .collect(Collectors.groupingBy(UserChatRoomMapped::getChatUser))
-                .keySet()
+                chatRoomUserList.stream()
+                        .collect(Collectors.groupingBy(UserChatRoomMapped::getChatUser))
+                        .keySet()
         );
     }
 }
