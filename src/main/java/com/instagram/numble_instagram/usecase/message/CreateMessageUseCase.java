@@ -2,6 +2,8 @@ package com.instagram.numble_instagram.usecase.message;
 
 import com.instagram.numble_instagram.model.dto.message.request.MessageSendRequest;
 import com.instagram.numble_instagram.model.entity.message.ChatRoom;
+import com.instagram.numble_instagram.model.entity.message.Message;
+import com.instagram.numble_instagram.model.entity.message.UserChatRoomMapped;
 import com.instagram.numble_instagram.model.entity.user.User;
 import com.instagram.numble_instagram.service.message.*;
 import com.instagram.numble_instagram.service.user.UserService;
@@ -10,34 +12,37 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class CreateMessageUseCase {
 
     private final UserService userService;
-    private final ChatRoomReadService chatRoomReadService;
     private final ChatRoomWriteService chatRoomWriteService;
     private final UserChatRoomMappedReadService userChatRoomMappedReadService;
-    private final MessageReadService messageReadService;
+    private final UserChatRoomMappedWriteService userChatRoomMappedWriteService;
     private final MessageWriteService messageWriteService;
 
     @Transactional
     public void execute(Long fromUserId, MessageSendRequest messageSendRequest) {
         User fromUser = userService.getUser(fromUserId);
         User toUser = userService.getUser(messageSendRequest.toUserId());
-
-        List<ChatRoom> fromUserChatRoomList = userChatRoomMappedReadService.getChatRoomList(fromUser);
-        List<ChatRoom> toUserChatRoomList = userChatRoomMappedReadService.getChatRoomList(toUser);
-
-        ChatRoom chatRoom = fromUserChatRoomList.stream()
-                .filter(fromChatRoom -> toUserChatRoomList.stream().anyMatch(toChatRoom -> toChatRoom.equals(fromChatRoom)))
-                .findFirst()
-                .orElse(chatRoomWriteService.register(fromUser));
-
-        messageWriteService.sendMessage(chatRoom, fromUser, messageSendRequest.content());
-        chatRoomWriteService.saveLastMessage(chatRoom.getChatRoomId(), messageSendRequest.content());
+        // 채팅룸 존재여부 확인
+        ChatRoom singleChatRoom = null;
+        if (userChatRoomMappedReadService.existSingleChatRoom(fromUser, toUser))
+            singleChatRoom = userChatRoomMappedReadService.getSingleChatRoom(fromUser, toUser);
+        // 채팅룸 없는 경우
+        if (singleChatRoom == null)
+            singleChatRoom = chatRoomWriteService.register(fromUser);
+        // 유저 채팅 매핑 테이블 추가
+        UserChatRoomMapped fromRoomMapped = userChatRoomMappedWriteService.plusUser(singleChatRoom, fromUser);
+        UserChatRoomMapped toRoomMapped = userChatRoomMappedWriteService.plusUser(singleChatRoom, toUser);
+        singleChatRoom.addUserChatRoomMapped(fromRoomMapped);
+        singleChatRoom.addUserChatRoomMapped(toRoomMapped);
+        // 메세지 전송
+        Message newMessage = messageWriteService.sendMessage(singleChatRoom, fromUser, messageSendRequest.content());
+        singleChatRoom.addMessage(newMessage);
+        singleChatRoom.changeLastMessage(newMessage.getContent());
+        singleChatRoom.changeLastSendUser(newMessage.getSendUser());
     }
 }

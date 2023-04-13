@@ -10,6 +10,8 @@ import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import java.util.Objects;
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @DynamicInsert
@@ -45,6 +47,19 @@ public class UserChatRoomMapped {
     public UserChatRoomMapped(ChatRoom chatRoom, User chatUser) {
         this.chatRoom = chatRoom;
         this.chatUser = chatUser;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserChatRoomMapped that = (UserChatRoomMapped) o;
+        return Objects.equals(chatRoom, that.chatRoom) && Objects.equals(chatUser, that.chatUser);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(chatRoom, chatUser);
     }
 
     /**
